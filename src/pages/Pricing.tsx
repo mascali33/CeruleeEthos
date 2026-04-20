@@ -1,6 +1,7 @@
 import { useState } from 'react';
 
 const Pricing = () => {
+  const [mode, setMode] = useState<'personnel' | 'professionnel'>('professionnel');
   const [capacity, setCapacity] = useState(24);
   const [addons, setAddons] = useState({
     cloud: true,
@@ -19,6 +20,8 @@ const Pricing = () => {
     inventory: 2.2,
   };
 
+  const effectiveCapacity = mode === 'personnel' ? 1 : capacity;
+
   const calculateMonthly = () => {
     let perUserTotal = basePrice;
     if (addons.cloud) perUserTotal += prices.cloud;
@@ -26,7 +29,7 @@ const Pricing = () => {
     if (addons.budget) perUserTotal += prices.budget;
     if (addons.password) perUserTotal += prices.password;
     if (addons.inventory) perUserTotal += prices.inventory;
-    return (perUserTotal * capacity).toFixed(2);
+    return (perUserTotal * effectiveCapacity).toFixed(2);
   };
 
   const toggleAddon = (addon: keyof typeof addons) => {
@@ -51,35 +54,47 @@ const Pricing = () => {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         <section className="lg:col-span-7 space-y-8">
           <div className="bg-surface-container-low p-2 rounded-xl inline-flex w-full md:w-auto">
-            <button className="flex-1 md:flex-none px-8 py-3 rounded-lg text-sm font-bold text-on-surface-variant hover:text-primary transition-all">Personnel</button>
-            <button className="flex-1 md:flex-none px-8 py-3 rounded-lg text-sm font-bold bg-surface-container-lowest text-on-surface shadow-sm transition-all">Professionnel</button>
+            <button
+              onClick={() => setMode('personnel')}
+              className={`flex-1 md:flex-none px-8 py-3 rounded-lg text-sm font-bold transition-all ${mode === 'personnel' ? 'bg-surface-container-lowest text-on-surface shadow-sm' : 'text-on-surface-variant hover:text-primary'}`}
+            >
+              Personnel
+            </button>
+            <button
+              onClick={() => setMode('professionnel')}
+              className={`flex-1 md:flex-none px-8 py-3 rounded-lg text-sm font-bold transition-all ${mode === 'professionnel' ? 'bg-surface-container-lowest text-on-surface shadow-sm' : 'text-on-surface-variant hover:text-primary'}`}
+            >
+              Professionnel
+            </button>
           </div>
 
           <div className="bg-surface-container-lowest p-8 md:p-10 rounded-[2rem] shadow-xl shadow-on-surface/5">
-            <div className="mb-12">
-              <div className="flex justify-between items-end mb-6">
-                <div>
-                  <h3 className="text-xl font-bold text-on-background">Capacité</h3>
-                  <p className="text-sm text-on-surface-variant">Nombre de collaborateurs actifs</p>
+            {mode === 'professionnel' && (
+              <div className="mb-12">
+                <div className="flex justify-between items-end mb-6">
+                  <div>
+                    <h3 className="text-xl font-bold text-on-background">Capacité</h3>
+                    <p className="text-sm text-on-surface-variant">Nombre de collaborateurs actifs</p>
+                  </div>
+                  <div className="text-right">
+                    <span className="text-4xl font-extrabold text-primary">{capacity}</span>
+                    <span className="text-on-surface-variant font-medium ml-1">Utilisateurs</span>
+                  </div>
                 </div>
-                <div className="text-right">
-                  <span className="text-4xl font-extrabold text-primary">{capacity}</span>
-                  <span className="text-on-surface-variant font-medium ml-1">Utilisateurs</span>
+                <input
+                  type="range"
+                  min="1"
+                  max="100"
+                  value={capacity}
+                  onChange={(e) => setCapacity(parseInt(e.target.value))}
+                  className="w-full h-3 bg-surface-container-high rounded-full appearance-none cursor-pointer accent-primary"
+                />
+                <div className="flex justify-between mt-4 text-xs font-bold text-outline-variant uppercase tracking-widest">
+                  <span>1 Utilisateur</span>
+                  <span>100+ Utilisateurs</span>
                 </div>
               </div>
-              <input
-                type="range"
-                min="1"
-                max="100"
-                value={capacity}
-                onChange={(e) => setCapacity(parseInt(e.target.value))}
-                className="w-full h-3 bg-surface-container-high rounded-full appearance-none cursor-pointer accent-primary"
-              />
-              <div className="flex justify-between mt-4 text-xs font-bold text-outline-variant uppercase tracking-widest">
-                <span>1 Utilisateur</span>
-                <span>100+ Utilisateurs</span>
-              </div>
-            </div>
+            )}
 
             <div className="flex items-center justify-between p-6 rounded-2xl bg-primary/5 border border-primary/10 mb-8">
               <div className="flex items-center gap-4">
@@ -139,8 +154,8 @@ const Pricing = () => {
               </div>
               <div className="space-y-6 mb-10">
                 <div className="flex justify-between items-center">
-                  <span className="text-on-surface font-medium">Licence Standard ({capacity} util.)</span>
-                  <span className="text-on-background font-bold">€{(capacity * basePrice).toFixed(2)}</span>
+                  <span className="text-on-surface font-medium">Licence Standard ({effectiveCapacity} util.)</span>
+                  <span className="text-on-background font-bold">€{(effectiveCapacity * basePrice).toFixed(2)}</span>
                 </div>
                 {Object.entries(addons).map(([key, active]) => active && (
                   <div key={key} className="flex justify-between items-center">
@@ -148,7 +163,7 @@ const Pricing = () => {
                       <span className="text-on-surface font-medium">Option {key.charAt(0).toUpperCase() + key.slice(1)}</span>
                       <span className="text-[10px] bg-secondary-container text-on-secondary-container px-1.5 py-0.5 rounded font-bold uppercase tracking-tighter">Actif</span>
                     </div>
-                    <span className="text-on-background font-bold">€{(capacity * prices[key as keyof typeof prices]).toFixed(2)}</span>
+                    <span className="text-on-background font-bold">€{(effectiveCapacity * prices[key as keyof typeof prices]).toFixed(2)}</span>
                   </div>
                 ))}
               </div>
