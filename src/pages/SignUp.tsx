@@ -2,27 +2,29 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 
 const SignUp = () => {
+  const [mode, setMode] = useState<'personnel' | 'professionnel'>('personnel');
+  const [capacity, setCapacity] = useState(24);
   const [pack, setPack] = useState({
     cloud: true,
     notes: false,
     budget: false,
-    mail: false,
   });
 
+  const basePrice = 4.0; // Mail Service (Always included)
   const packPrices = {
     cloud: 5.0,
     notes: 2.5,
     budget: 3.0,
-    mail: 4.0,
   };
 
+  const effectiveCapacity = mode === 'personnel' ? 1 : capacity;
+
   const calculateTotal = () => {
-    let total = 0;
-    if (pack.cloud) total += packPrices.cloud;
-    if (pack.notes) total += packPrices.notes;
-    if (pack.budget) total += packPrices.budget;
-    if (pack.mail) total += packPrices.mail;
-    return total.toFixed(2);
+    let totalPerUser = basePrice;
+    if (pack.cloud) totalPerUser += packPrices.cloud;
+    if (pack.notes) totalPerUser += packPrices.notes;
+    if (pack.budget) totalPerUser += packPrices.budget;
+    return (totalPerUser * effectiveCapacity).toFixed(2);
   };
 
   const togglePack = (item: keyof typeof pack) => {
@@ -67,10 +69,45 @@ const SignUp = () => {
           <form className="space-y-12" onSubmit={(e) => e.preventDefault()}>
             <section>
               <label className="block font-headline font-bold text-sm mb-4 uppercase tracking-wider text-on-surface-variant">Type de compte</label>
-              <div className="inline-flex p-1 bg-surface-container-high rounded-full w-full sm:w-auto">
-                <button type="button" className="px-8 py-3 rounded-full bg-surface-container-lowest text-primary font-bold shadow-sm transition-all duration-300">Personnel</button>
-                <button type="button" className="px-8 py-3 rounded-full text-on-surface-variant hover:text-on-surface transition-all duration-300">Professionnel</button>
+              <div className="inline-flex p-1 bg-surface-container-high rounded-full w-full sm:w-auto mb-8">
+                <button
+                  type="button"
+                  onClick={() => setMode('personnel')}
+                  className={`px-8 py-3 rounded-full font-bold transition-all duration-300 ${mode === 'personnel' ? 'bg-surface-container-lowest text-primary shadow-sm' : 'text-on-surface-variant hover:text-on-surface'}`}
+                >
+                  Personnel
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setMode('professionnel')}
+                  className={`px-8 py-3 rounded-full font-bold transition-all duration-300 ${mode === 'professionnel' ? 'bg-surface-container-lowest text-primary shadow-sm' : 'text-on-surface-variant hover:text-on-surface'}`}
+                >
+                  Professionnel
+                </button>
               </div>
+
+              {mode === 'professionnel' && (
+                <div className="bg-surface-container-low p-6 rounded-2xl animate-in fade-in slide-in-from-top-4 duration-500">
+                  <div className="flex justify-between items-end mb-4">
+                    <div>
+                      <h3 className="font-headline font-bold text-on-surface">Capacité</h3>
+                      <p className="text-xs text-on-surface-variant">Nombre de collaborateurs</p>
+                    </div>
+                    <div className="text-right">
+                      <span className="text-2xl font-extrabold text-primary">{capacity}</span>
+                      <span className="text-on-surface-variant text-xs font-medium ml-1">Utilisateurs</span>
+                    </div>
+                  </div>
+                  <input
+                    type="range"
+                    min="1"
+                    max="100"
+                    value={capacity}
+                    onChange={(e) => setCapacity(parseInt(e.target.value))}
+                    className="w-full h-2 bg-surface-container-highest rounded-full appearance-none cursor-pointer accent-primary"
+                  />
+                </div>
+              )}
             </section>
 
             <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -94,11 +131,23 @@ const SignUp = () => {
                 <p className="text-on-surface-variant text-sm">Sélectionnez les services essentiels à votre écosystème.</p>
               </header>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {/* Base Mail Service - Always Included */}
+                <div className="p-6 rounded-2xl bg-primary/5 border border-primary/20 flex flex-col gap-3 relative">
+                  <div className="flex justify-between items-start">
+                    <span className="material-symbols-outlined text-on-primary-fixed-variant">mail</span>
+                    <span className="px-2 py-0.5 rounded-full bg-primary-container text-on-primary-container text-[10px] font-bold uppercase tracking-wider">Inclus</span>
+                  </div>
+                  <div>
+                    <p className="font-bold font-headline">Email Chiffré (Base)</p>
+                    <p className="text-xs text-on-surface-variant">Respect total de la vie privée</p>
+                  </div>
+                  <p className="text-sm font-bold text-primary">4,00€ <span className="text-xs text-on-surface-variant font-normal">/ mois / util.</span></p>
+                </div>
+
                 {[
                   { key: 'cloud', icon: 'cloud', name: 'Stockage Cloud', desc: '50 Go d\'espace sécurisé', price: '5,00€', color: 'text-primary' },
                   { key: 'notes', icon: 'edit_note', name: 'Notes Partagées', desc: 'Collaboration en temps réel', price: '2,50€', color: 'text-secondary' },
                   { key: 'budget', icon: 'account_balance_wallet', name: 'Gestion Budget', desc: 'Outils financiers éthiques', price: '3,00€', color: 'text-tertiary' },
-                  { key: 'mail', icon: 'mail', name: 'Email Chiffré', desc: 'Respect total de la vie privée', price: '4,00€', color: 'text-on-primary-fixed-variant' },
                 ].map((item) => (
                   <label key={item.key} className="group cursor-pointer relative">
                     <input
