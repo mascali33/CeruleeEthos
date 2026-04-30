@@ -11,6 +11,9 @@ export interface Product {
   color?: string;
   link?: string;
   image?: string;
+  // Metadata for Services page layout
+  gridSpan?: 'small' | 'medium' | 'large';
+  variant?: 'featured' | 'secondary' | 'video' | 'chat' | 'note' | 'horizontal';
 }
 
 export const PRODUCTS: Product[] = [
@@ -35,6 +38,8 @@ export const PRODUCTS: Product[] = [
     isAddon: true,
     tags: ['Collaboratif', 'Stockage'],
     color: 'text-primary',
+    gridSpan: 'large',
+    variant: 'featured',
   },
   {
     id: 'notes',
@@ -46,6 +51,8 @@ export const PRODUCTS: Product[] = [
     isAddon: true,
     tags: ['Collaboratif'],
     color: 'text-secondary',
+    gridSpan: 'small',
+    variant: 'note',
   },
   {
     id: 'budget',
@@ -77,36 +84,65 @@ export const PRODUCTS: Product[] = [
   },
 ];
 
-// Additional services that are not necessarily priced addons in the current UI
-// but are listed on the Services page.
-export const FEATURED_SERVICES = [
+export const FEATURED_SERVICES: Product[] = [
   {
     id: 'mastodon',
     name: 'Mastodon',
+    shortDescription: 'Le réseau social décentralisé',
     description: 'Le réseau social décentralisé. Connectez-vous avec des millions de personnes sans algorithmes contrôlant votre flux.',
+    price: 0,
     icon: 'forum',
+    isAddon: false,
     link: '#',
     color: 'secondary',
+    gridSpan: 'small',
+    variant: 'secondary',
   },
   {
     id: 'peertube',
     name: 'PeerTube',
+    shortDescription: 'Hébergement vidéo éthique',
     description: 'Hébergez et diffusez vos vidéos de manière éthique. La technologie pair-à-pair réduit la charge serveur et l\'autorité centrale.',
+    price: 0,
     icon: 'play_circle',
+    isAddon: false,
     link: '#',
     image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBkHIARu0NQ6-OSeCIlrVjTqqoSgVfcXo0TuCUxw8uMMiwXGEFCEe2k3SZMUF6RCxy7LvzwEnk5AD8rjjjV9ulzbMZXEZg_t8ZtMIinysMJfj7P3-chYDj6-t_KUUHt_jR-D9IBYvS7pCmeLQXkNe7TIDxOl5PEJCfLVFC1zSXs4oYNM7Glw1piLDwY_23YVwk3eSZxUoyFN5njdKmXubr8lvSNPK9Dwsf9zIJR9zPATB44HCfY_nY1O-Ft1mE5Jx5i51-slxxLgSo',
+    gridSpan: 'small',
+    variant: 'video',
   },
   {
     id: 'matrix',
     name: 'Matrix Chat',
+    shortDescription: 'Communication sécurisée',
     description: 'Communication sécurisée et décentralisée. Discutez avec n\'importe qui sur n\'importe quel serveur avec un chiffrement robuste.',
+    price: 0,
     icon: 'chat_bubble',
+    isAddon: false,
     tags: ['Passerelles disponibles'],
+    gridSpan: 'small',
+    variant: 'chat',
   },
   {
     id: 'gitea',
     name: 'Gitea Forge',
+    shortDescription: 'Hébergement Git léger',
     description: 'Un service Git auto-hébergé simple. Léger et incroyablement rapide pour votre hébergement de code éthique.',
+    price: 0,
+    icon: 'code',
+    isAddon: false,
     image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDf-r-m0IO-qnsc8TKZ8FM_e-RplsqgXD0RtyiB0E42x9YJ5mfvxo6T4PBrA0L6ZesnO5RqVYLOv4LEYtOd3BtysOMuW3ALJliluJDFmfxYKzAVHTppdQiSzCwPqCAr5pUpGjPeXSb1zTWI4J1b5aGMv0XcC6w-cziffSABSN3epg2XPxy7bz84LS380mdrXfQfthww1QCPctEpnVi7teURnOqp1ScGENUta4wOQiOrk9CLyUe1V0PcC5FMdPDytpFO9G-7kiDByFI',
+    gridSpan: 'medium',
+    variant: 'horizontal',
   },
 ];
+
+export const SERVICES_PAGE_LIST = [
+  ...PRODUCTS.filter(p => p.gridSpan), // Only those with explicit grid config
+  ...FEATURED_SERVICES
+].sort((a, b) => {
+    // Keep Nextcloud first for the bento layout
+    if (a.id === 'cloud') return -1;
+    if (b.id === 'cloud') return 1;
+    return 0;
+});
