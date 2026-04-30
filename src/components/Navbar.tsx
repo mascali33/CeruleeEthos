@@ -1,13 +1,15 @@
 import { Link, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 const Navbar = () => {
+  const { t } = useTranslation();
   const location = useLocation();
 
   const navLinks = [
-    { name: 'Accueil', path: '/' },
-    { name: 'Services', path: '/services' },
-    { name: 'Tarifs', path: '/pricing' },
-    { name: 'À propos', path: '/about' },
+    { name: t('nav.home'), path: '/' },
+    { name: t('nav.services'), path: '/services' },
+    { name: t('nav.pricing'), path: '/pricing' },
+    { name: t('nav.about'), path: '/about' },
   ];
 
   return (
@@ -19,7 +21,7 @@ const Navbar = () => {
         <div className="hidden md:flex items-center gap-10 font-headline text-sm tracking-tight font-medium">
           {navLinks.map((link) => (
             <Link
-              key={link.name}
+              key={link.path}
               to={link.path}
               className={`${
                 location.pathname === link.path
@@ -35,7 +37,7 @@ const Navbar = () => {
           to="/signup"
           className="bg-primary text-on-primary px-6 py-2.5 rounded-full font-headline text-sm font-bold scale-95 active:scale-90 transition-all duration-300 hover:opacity-80"
         >
-          S'inscrire
+          {t('nav.signup')}
         </Link>
       </div>
     </nav>

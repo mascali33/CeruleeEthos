@@ -1,0 +1,149 @@
+{
+  "nav": {
+    "home": "Accueil",
+    "services": "Services",
+    "pricing": "Tarifs",
+    "about": "À propos",
+    "signup": "S'inscrire"
+  },
+  "footer": {
+    "description": "© 2024 The Ethereal Commons. Fier membre du collectif CHATONS.",
+    "privacy": "Politique de confidentialité",
+    "charter": "Charte éthique",
+    "status": "État du réseau",
+    "support": "Support",
+    "language": "Langue"
+  },
+  "home": {
+    "hero": {
+      "title": "Le Cloud, Libéré.",
+      "subtitle": "Reprenez le contrôle de votre vie numérique avec une infrastructure éthique, open-source et gérée par la communauté.",
+      "cta_start": "Commencer l'Essai Gratuit",
+      "cta_manifesto": "Lire Notre Manifeste",
+      "uptime": "Uptime: 99.9%",
+      "verified": "Vérifié via preuve d'état publique sur blockchain."
+    },
+    "pills": {
+      "location": "Hébergé à Grenoble, FR",
+      "energy": "100% Énergie Renouvelable",
+      "ownership": "Propriété Coopérative"
+    },
+    "features": {
+      "title": "Conçu pour la Transparence",
+      "description": "Nous n'hébergeons pas seulement vos données ; nous protégeons votre libre arbitre. Notre architecture est ouverte, éthique et bâtie sur des valeurs partagées.",
+      "privacy_title": "Confidentialité Radicale",
+      "privacy_desc": "Pas de traqueurs, pas de récolte de données, pas de télémétrie cachée. Vos données restent les vôtres, régies par la charte éthique stricte du collectif CHATONS.",
+      "opensource_title": "100% Open Source",
+      "opensource_desc": "Chaque ligne de code alimentant notre infrastructure est auditable et libre. Aucun enfermement propriétaire, jamais.",
+      "local_title": "Local First",
+      "local_desc": "Nous hébergeons vos services sur des serveurs situés physiquement près de votre communauté, réduisant la latence et l'impact environnemental.",
+      "community_title": "Soutien Communautaire",
+      "community_desc": "De vrais humains qui soutiennent de vraies personnes. Notre forum de support est un lieu d'apprentissage et d'entraide mutuelle."
+    },
+    "how_it_works": {
+      "title": "Le Chemin vers la Souveraineté",
+      "step1_title": "Rejoignez les Communs",
+      "step1_desc": "Créez un compte et choisissez votre niveau d'adhésion. Nous sommes une association à but non lucratif ; vos cotisations vont directement à la maintenance.",
+      "step2_title": "Déployez vos Services",
+      "step2_desc": "Déploiement en un clic pour les alternatives éthiques aux Big Tech : Nextcloud, Mastodon, Peertube, et plus encore.",
+      "step3_title": "Possédez votre Identité",
+      "step3_desc": "Connectez votre domaine personnalisé et commencez à partager votre contenu sans le bagage du capitalisme de surveillance."
+    },
+    "cta": {
+      "title": "Prêt à quitter les boîtes noires ?",
+      "subtitle": "Rejoignez Ethereal Commons aujourd'hui et soutenez un web décentralisé et éthique pour tous."
+    }
+  },
+  "about": {
+    "title": "Notre Manifeste",
+    "subtitle": "Pour un numérique au service de l'humain, pas du profit.",
+    "intro": "Ethereal Commons est né d'un constat simple : le web actuel est brisé. Centralisé, surveillé et monétisé à l'excès, il ne sert plus les intérêts de ses utilisateurs. Nous proposons une alternative.",
+    "values": {
+      "sovereignty_title": "Souveraineté Numérique",
+      "sovereignty_desc": "Vous devez avoir le contrôle total sur vos outils et vos données.",
+      "cooperation_title": "Coopération Radicale",
+      "cooperation_desc": "Nous sommes un commun. Chaque membre participe à la résilience de l'ensemble.",
+      "frugality_title": "Frugalité Technique",
+      "frugality_desc": "Nous optimisons nos services pour minimiser leur impact écologique."
+    }
+  },
+  "pricing": {
+    "title": "Une Participation Équitable",
+    "subtitle": "Pas de profit, juste le coût réel de l'infrastructure et de l'humain.",
+    "personnel": "Personnel",
+    "professionnel": "Professionnel",
+    "users": "Utilisateurs",
+    "billed_annually": "Facturé annuellement",
+    "get_started": "Commencer",
+    "addons": {
+      "cloud": "Stockage Cloud",
+      "notes": "Notes Partagées",
+      "budget": "Gestion de Budget",
+      "password": "Gestionnaire de Mots de Passe",
+      "inventory": "Gestion d'Inventaire"
+    },
+    "plans": {
+      "nomade": {
+        "name": "Nomade",
+        "desc": "Idéal pour débuter votre voyage vers la souveraineté."
+      },
+      "communaute": {
+        "name": "Communauté",
+        "desc": "Pour les familles et les petits collectifs."
+      },
+      "institution": {
+        "name": "Institution",
+        "desc": "Infrastructure robuste pour les organisations éthiques."
+      }
+    }
+  },
+  "services": {
+    "title": "Votre Écosystème Libre",
+    "subtitle": "Tous les outils dont vous avez besoin, sans compromis sur votre vie privée.",
+    "list": {
+      "cloud_title": "Nextcloud Hub",
+      "cloud_desc": "Stockage de fichiers, calendrier, contacts et édition de documents en ligne.",
+      "mail_title": "Email Éthique",
+      "mail_desc": "Service de messagerie sans publicité ni analyse de contenu.",
+      "chat_title": "Espace de Discussion",
+      "chat_desc": "Messagerie instantanée sécurisée et fédérée via le protocole Matrix.",
+      "video_title": "Visioconférence",
+      "video_desc": "Réunions privées sans limite de temps avec Jitsi Meet.",
+      "form_title": "Sondages & Formulaires",
+      "form_desc": "Collectez des données de manière respectueuse et sécurisée.",
+      "dev_title": "Hébergement Code",
+      "dev_desc": "Gérez vos projets logiciels avec une instance GitLab ou Forgejo."
+    }
+  },
+  "signup": {
+    "title": "Rejoignez le Collectif",
+    "subtitle": "Une technologie éthique, gérée par la communauté, pour des esprits libres. Créez votre espace aujourd'hui.",
+    "energy_title": "Énergie 100% renouvelable",
+    "energy_desc": "Serveurs alimentés localement en Europe.",
+    "account_type": "Type de compte",
+    "capacity": "Capacité",
+    "collaborators": "Nombre de collaborateurs",
+    "full_name": "Nom complet",
+    "email": "Adresse Email",
+    "password": "Mot de passe",
+    "configure_pack": "Configurez votre pack",
+    "pack_desc": "Sélectionnez les services essentiels à votre écosystème.",
+    "included": "Inclus",
+    "estimated_total": "Récapitulatif estimé",
+    "per_month": "/ mois",
+    "per_user": "/ mois / util.",
+    "annual_billing_note": "* Facturé annuellement ou mensuellement",
+    "create_account": "Créer mon compte",
+    "tos_note": "En vous inscrivant, vous acceptez notre Charte éthique et notre Politique de confidentialité.",
+    "services_list": {
+      "mail": "Email Chiffré (Base)",
+      "mail_desc": "Respect total de la vie privée",
+      "cloud": "Stockage Cloud",
+      "cloud_desc": "50 Go d'espace sécurisé",
+      "notes": "Notes Partagées",
+      "notes_desc": "Collaboration en temps réel",
+      "budget": "Gestion Budget",
+      "budget_desc": "Outils financiers éthiques"
+    }
+  }
+}

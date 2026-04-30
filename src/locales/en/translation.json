@@ -1,0 +1,149 @@
+{
+  "nav": {
+    "home": "Home",
+    "services": "Services",
+    "pricing": "Pricing",
+    "about": "About",
+    "signup": "Sign Up"
+  },
+  "footer": {
+    "description": "© 2024 The Ethereal Commons. Proud member of the CHATONS collective.",
+    "privacy": "Privacy Policy",
+    "charter": "Ethical Charter",
+    "status": "Network Status",
+    "support": "Support",
+    "language": "Language"
+  },
+  "home": {
+    "hero": {
+      "title": "The Cloud, Liberated.",
+      "subtitle": "Take back control of your digital life with ethical, open-source, community-managed infrastructure.",
+      "cta_start": "Start Free Trial",
+      "cta_manifesto": "Read Our Manifesto",
+      "uptime": "Uptime: 99.9%",
+      "verified": "Verified via public proof of state on blockchain."
+    },
+    "pills": {
+      "location": "Hosted in Grenoble, FR",
+      "energy": "100% Renewable Energy",
+      "ownership": "Cooperative Ownership"
+    },
+    "features": {
+      "title": "Designed for Transparency",
+      "description": "We don't just host your data; we protect your free will. Our architecture is open, ethical, and built on shared values.",
+      "privacy_title": "Radical Privacy",
+      "privacy_desc": "No trackers, no data harvesting, no hidden telemetry. Your data remains yours, governed by the strict ethical charter of the CHATONS collective.",
+      "opensource_title": "100% Open Source",
+      "opensource_desc": "Every line of code powering our infrastructure is auditable and free. No vendor lock-in, ever.",
+      "local_title": "Local First",
+      "local_desc": "We host your services on servers physically located near your community, reducing latency and environmental impact.",
+      "community_title": "Community Support",
+      "community_desc": "Real humans supporting real people. Our support forum is a place for learning and mutual aid."
+    },
+    "how_it_works": {
+      "title": "The Path to Sovereignty",
+      "step1_title": "Join the Commons",
+      "step1_desc": "Create an account and choose your membership level. We are a non-profit association; your contributions go directly to maintenance.",
+      "step2_title": "Deploy your Services",
+      "step2_desc": "One-click deployment for ethical alternatives to Big Tech: Nextcloud, Mastodon, Peertube, and more.",
+      "step3_title": "Own your Identity",
+      "step3_desc": "Connect your custom domain and start sharing your content without the baggage of surveillance capitalism."
+    },
+    "cta": {
+      "title": "Ready to leave the black boxes?",
+      "subtitle": "Join Ethereal Commons today and support a decentralized and ethical web for all."
+    }
+  },
+  "about": {
+    "title": "Our Manifesto",
+    "subtitle": "For technology in the service of humans, not profit.",
+    "intro": "Ethereal Commons was born from a simple observation: today's web is broken. Centralized, surveilled, and excessively monetized, it no longer serves the interests of its users. We offer an alternative.",
+    "values": {
+      "sovereignty_title": "Digital Sovereignty",
+      "sovereignty_desc": "You must have total control over your tools and your data.",
+      "cooperation_title": "Radical Cooperation",
+      "cooperation_desc": "We are a commons. Each member participates in the resilience of the whole.",
+      "frugality_title": "Technical Frugality",
+      "frugality_desc": "We optimize our services to minimize their ecological impact."
+    }
+  },
+  "pricing": {
+    "title": "Fair Participation",
+    "subtitle": "No profit, just the real cost of infrastructure and humans.",
+    "personnel": "Personal",
+    "professionnel": "Professional",
+    "users": "Users",
+    "billed_annually": "Billed annually",
+    "get_started": "Get Started",
+    "addons": {
+      "cloud": "Cloud Storage",
+      "notes": "Shared Notes",
+      "budget": "Budget Management",
+      "password": "Password Manager",
+      "inventory": "Inventory Management"
+    },
+    "plans": {
+      "nomade": {
+        "name": "Nomad",
+        "desc": "Ideal for starting your journey towards sovereignty."
+      },
+      "communaute": {
+        "name": "Community",
+        "desc": "For families and small collectives."
+      },
+      "institution": {
+        "name": "Institution",
+        "desc": "Robust infrastructure for ethical organizations."
+      }
+    }
+  },
+  "services": {
+    "title": "Your Free Ecosystem",
+    "subtitle": "All the tools you need, without compromising your privacy.",
+    "list": {
+      "cloud_title": "Nextcloud Hub",
+      "cloud_desc": "File storage, calendar, contacts, and online document editing.",
+      "mail_title": "Ethical Email",
+      "mail_desc": "Messaging service without ads or content analysis.",
+      "chat_title": "Discussion Space",
+      "chat_desc": "Secure and federated instant messaging via the Matrix protocol.",
+      "video_title": "Video Conferencing",
+      "video_desc": "Private meetings with no time limit using Jitsi Meet.",
+      "form_title": "Surveys & Forms",
+      "form_desc": "Collect data in a respectful and secure way.",
+      "dev_title": "Code Hosting",
+      "dev_desc": "Manage your software projects with a GitLab or Forgejo instance."
+    }
+  },
+  "signup": {
+    "title": "Join the Collective",
+    "subtitle": "Ethical technology, community-managed, for free minds. Create your space today.",
+    "energy_title": "100% Renewable Energy",
+    "energy_desc": "Servers powered locally in Europe.",
+    "account_type": "Account Type",
+    "capacity": "Capacity",
+    "collaborators": "Number of collaborators",
+    "full_name": "Full Name",
+    "email": "Email Address",
+    "password": "Password",
+    "configure_pack": "Configure your pack",
+    "pack_desc": "Select the essential services for your ecosystem.",
+    "included": "Included",
+    "estimated_total": "Estimated Total",
+    "per_month": "/ month",
+    "per_user": "/ month / user",
+    "annual_billing_note": "* Billed annually or monthly",
+    "create_account": "Create my account",
+    "tos_note": "By signing up, you agree to our Ethical Charter and our Privacy Policy.",
+    "services_list": {
+      "mail": "Encrypted Email (Base)",
+      "mail_desc": "Total privacy respect",
+      "cloud": "Cloud Storage",
+      "cloud_desc": "50 GB of secure space",
+      "notes": "Shared Notes",
+      "notes_desc": "Real-time collaboration",
+      "budget": "Budget Management",
+      "budget_desc": "Ethical financial tools"
+    }
+  }
+}
