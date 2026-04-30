@@ -1,39 +1,33 @@
 import { useState } from 'react';
+import { PRODUCTS } from '../data/products';
 
 const Pricing = () => {
   const [mode, setMode] = useState<'personnel' | 'professionnel'>('professionnel');
   const [capacity, setCapacity] = useState(24);
-  const [addons, setAddons] = useState({
-    cloud: true,
-    notes: false,
-    budget: true,
-    password: false,
-    inventory: false,
-  });
 
-  const basePrice = 5; // per user
-  const prices = {
-    cloud: 2.5,
-    notes: 1.2,
-    budget: 3.0,
-    password: 0.8,
-    inventory: 2.2,
-  };
+  const baseProduct = PRODUCTS.find(p => p.isBase) || PRODUCTS[0];
+  const addonProducts = PRODUCTS.filter(p => p.isAddon);
+
+  const [addons, setAddons] = useState<Record<string, boolean>>({
+    cloud: true,
+    budget: true,
+    ...Object.fromEntries(addonProducts.map(p => [p.id, p.id === 'cloud' || p.id === 'budget']))
+  });
 
   const effectiveCapacity = mode === 'personnel' ? 1 : capacity;
 
   const calculateMonthly = () => {
-    let perUserTotal = basePrice;
-    if (addons.cloud) perUserTotal += prices.cloud;
-    if (addons.notes) perUserTotal += prices.notes;
-    if (addons.budget) perUserTotal += prices.budget;
-    if (addons.password) perUserTotal += prices.password;
-    if (addons.inventory) perUserTotal += prices.inventory;
+    let perUserTotal = baseProduct.price;
+    addonProducts.forEach(addon => {
+      if (addons[addon.id]) {
+        perUserTotal += addon.price;
+      }
+    });
     return (perUserTotal * effectiveCapacity).toFixed(2);
   };
 
-  const toggleAddon = (addon: keyof typeof addons) => {
-    setAddons({ ...addons, [addon]: !addons[addon] });
+  const toggleAddon = (addonId: string) => {
+    setAddons({ ...addons, [addonId]: !addons[addonId] });
   };
 
   return (
@@ -99,11 +93,11 @@ const Pricing = () => {
             <div className="flex items-center justify-between p-6 rounded-2xl bg-primary/5 border border-primary/10 mb-8">
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 rounded-xl bg-primary flex items-center justify-center text-on-primary shadow-lg shadow-primary/20">
-                  <span className="material-symbols-outlined">mail</span>
+                  <span className="material-symbols-outlined">{baseProduct.icon}</span>
                 </div>
                 <div>
-                  <h4 className="font-bold text-on-background">Service Mail</h4>
-                  <p className="text-xs text-on-surface-variant">Email souverain avec domaine personnalisé</p>
+                  <h4 className="font-bold text-on-background">{baseProduct.name}</h4>
+                  <p className="text-xs text-on-surface-variant">{baseProduct.shortDescription}</p>
                 </div>
               </div>
               <span className="px-3 py-1 rounded-full bg-primary-container text-on-primary-container text-[10px] font-bold uppercase tracking-wider">Inclus</span>
@@ -111,33 +105,27 @@ const Pricing = () => {
 
             <h3 className="text-xl font-bold text-on-background mb-6">Modules Complémentaires</h3>
             <div className="space-y-4">
-              {[
-                { key: 'cloud', name: 'Cloud (Nextcloud)', desc: '2To de stockage sécurisé distribué', price: '2.50' },
-                { key: 'notes', name: 'Notes & Collaboratif', desc: 'Édition markdown en temps réel', price: '1.20' },
-                { key: 'budget', name: 'Gestion Budgétaire', desc: 'Finances collectives intégrées', price: '3.00' },
-                { key: 'password', name: 'Gestionnaire de mots de passe', desc: 'Organisation partagée Vaultwarden', price: '0.80' },
-                { key: 'inventory', name: 'Gestion d\'inventaire', desc: 'Suivi d\'actifs pour coopératives', price: '2.20' },
-              ].map((addon) => (
+              {addonProducts.map((addon) => (
                 <label
-                  key={addon.key}
+                  key={addon.id}
                   className="flex items-center justify-between p-5 rounded-2xl bg-surface-container-low cursor-pointer hover:bg-surface-container-high transition-colors group"
                 >
                   <div className="flex items-center gap-4">
                     <input
                       type="checkbox"
                       className="hidden"
-                      checked={addons[addon.key as keyof typeof addons]}
-                      onChange={() => toggleAddon(addon.key as keyof typeof addons)}
+                      checked={!!addons[addon.id]}
+                      onChange={() => toggleAddon(addon.id)}
                     />
-                    <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-colors ${addons[addon.key as keyof typeof addons] ? 'border-primary bg-primary' : 'border-outline-variant bg-transparent'}`}>
-                      {addons[addon.key as keyof typeof addons] && <span className="material-symbols-outlined text-xs text-on-primary font-bold">check</span>}
+                    <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-colors ${addons[addon.id] ? 'border-primary bg-primary' : 'border-outline-variant bg-transparent'}`}>
+                      {addons[addon.id] && <span className="material-symbols-outlined text-xs text-on-primary font-bold">check</span>}
                     </div>
                     <div>
                       <h5 className="font-bold text-sm text-on-background group-hover:text-primary transition-colors">{addon.name}</h5>
-                      <p className="text-xs text-on-surface-variant">{addon.desc}</p>
+                      <p className="text-xs text-on-surface-variant">{addon.shortDescription}</p>
                     </div>
                   </div>
-                  <span className="text-sm font-bold text-on-background">€{addon.price}<span className="text-[10px] text-on-surface-variant ml-1">/util.</span></span>
+                  <span className="text-sm font-bold text-on-background">€{addon.price.toFixed(2)}<span className="text-[10px] text-on-surface-variant ml-1">/util.</span></span>
                 </label>
               ))}
             </div>
@@ -154,16 +142,16 @@ const Pricing = () => {
               </div>
               <div className="space-y-6 mb-10">
                 <div className="flex justify-between items-center">
-                  <span className="text-on-surface font-medium">Licence Standard ({effectiveCapacity} util.)</span>
-                  <span className="text-on-background font-bold">€{(effectiveCapacity * basePrice).toFixed(2)}</span>
+                  <span className="text-on-surface font-medium">{baseProduct.name} ({effectiveCapacity} util.)</span>
+                  <span className="text-on-background font-bold">€{(effectiveCapacity * baseProduct.price).toFixed(2)}</span>
                 </div>
-                {Object.entries(addons).map(([key, active]) => active && (
-                  <div key={key} className="flex justify-between items-center">
+                {addonProducts.map((addon) => addons[addon.id] && (
+                  <div key={addon.id} className="flex justify-between items-center">
                     <div className="flex items-center gap-2">
-                      <span className="text-on-surface font-medium">Option {key.charAt(0).toUpperCase() + key.slice(1)}</span>
+                      <span className="text-on-surface font-medium">{addon.name}</span>
                       <span className="text-[10px] bg-secondary-container text-on-secondary-container px-1.5 py-0.5 rounded font-bold uppercase tracking-tighter">Actif</span>
                     </div>
-                    <span className="text-on-background font-bold">€{(effectiveCapacity * prices[key as keyof typeof prices]).toFixed(2)}</span>
+                    <span className="text-on-background font-bold">€{(effectiveCapacity * addon.price).toFixed(2)}</span>
                   </div>
                 ))}
               </div>
