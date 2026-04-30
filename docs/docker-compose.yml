@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: ..
+      dockerfile: docs/Dockerfile
+    container_name: app
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.app.rule=Host(\`localhost\`)"
+      - "traefik.http.routers.app.entrypoints=web"
+      - "traefik.http.routers.app.middlewares=spa-rewrite"
+      - "traefik.http.services.app.loadbalancer.server.port=80"
+    ports:
+      - "8080:80"
+
+  traefik:
+    image: traefik:v2.10
+    container_name: traefik
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--providers.file.filename=/etc/traefik/dynamic_conf.yaml"
+      - "--entrypoints.web.address=:80"
+    ports:
+      - "80:80"
+      - "8081:8080"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "./traefik-dynamic-config.yaml:/etc/traefik/dynamic_conf.yaml:ro"
