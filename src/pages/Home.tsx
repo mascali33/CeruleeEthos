@@ -8,36 +8,46 @@ const Home = () => {
   return (
     <div className="pt-20">
       {/* Hero Section */}
-      <section className="relative min-h-[90vh] flex items-center px-8 overflow-hidden">
-        <div className="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
-          <div className="lg:col-span-7 relative z-10">
+      <section className="relative overflow-hidden min-h-[921px] flex items-center px-8 lg:px-24">
+        <div className="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+          <div className="lg:col-span-7 z-10">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
+              className="inline-flex items-center gap-2 bg-surface-container-low px-4 py-2 rounded-full mb-8"
             >
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary font-headline text-sm font-bold mb-8">
-                <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
-                </span>
-                {t('home.hero.uptime')}
-              </div>
-              <h1 className="font-headline text-6xl md:text-8xl font-black text-on-surface tracking-tight mb-8 leading-[0.9]">
-                {t('home.hero.title')}
-              </h1>
-              <p className="font-body text-xl md:text-2xl text-on-surface-variant mb-12 max-w-2xl leading-relaxed">
-                {t('home.hero.subtitle')}
-              </p>
-              <div className="flex flex-col sm:flex-row gap-6">
-                <Link to="/signup" className="bg-primary text-on-primary px-10 py-5 rounded-full font-headline font-extrabold text-lg shadow-2xl shadow-primary/20 hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-2 group">
-                  {t('home.hero.cta_start')}
-                  <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
-                </Link>
-                <Link to="/about" className="bg-surface-container-low text-on-surface px-10 py-5 rounded-full font-headline font-bold text-lg hover:bg-surface-container-high transition-colors flex items-center justify-center">
-                  {t('home.hero.cta_manifesto')}
-                </Link>
-              </div>
+              <span className="material-symbols-outlined text-primary text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>eco</span>
+              <span className="text-xs font-label font-bold tracking-widest text-primary uppercase">{t('home.hero.badge')}</span>
+            </motion.div>
+            <motion.h1
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+              className="font-headline text-5xl md:text-7xl font-extrabold tracking-tight text-on-surface mb-8 leading-[1.1]"
+            >
+              {t('home.hero.title_prefix')}<br/>
+              <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">{t('home.hero.title')}</span>
+            </motion.h1>
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="text-xl text-on-surface-variant leading-relaxed max-w-xl mb-12"
+            >
+              {t('home.hero.subtitle')}
+            </motion.p>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="flex flex-col sm:flex-row gap-4"
+            >
+              <button className="bg-primary text-on-primary px-8 py-4 rounded-full font-headline font-bold text-lg hover:shadow-lg transition-all">
+                {t('home.hero.cta_start')}
+              </button>
+              <Link to="/services" className="bg-secondary-container text-on-secondary-container px-8 py-4 rounded-xl font-headline font-bold text-lg hover:opacity-90 transition-all text-center">
+                Explorer les Communs
+              </Link>
             </motion.div>
           </div>
 
@@ -51,7 +61,7 @@ const Home = () => {
             >
               <img
                 src="https://lh3.googleusercontent.com/aida-public/AB6AXuDY3yp2Dh07uKdvLvGQV6TsL7NA-I4BggkDui23oiLmGzuA4qG4tHcqi6UrpFCDyxA4xxy6I5YOqFNUCq9LvkSQPtBxxRQutcVzSuZuCvzFetTL4yH-EzCxVQs7KR7LQPCk5ndA6VAo-xmydmOvz_AJ02oywibPim790SmBH-ouZFQBff6Wib8jJSjfy-6lqX-FOXh0Mg65nJMGmIHl9FE0gngWB41fvlkKyACHDPqkNuoPs2Lau0zTyO0deaF9ztrxc3YeiPuR6wg"
-                alt="Modern minimalist server"
+                alt="Serveur moderne minimaliste"
                 className="rounded-[2rem] w-full h-[500px] object-cover"
               />
               <div className="absolute bottom-10 -left-10 glass-card p-6 rounded-2xl shadow-xl border border-white/50 max-w-[200px]">
@@ -98,7 +108,7 @@ const Home = () => {
               </div>
               <img
                 src="https://lh3.googleusercontent.com/aida-public/AB6AXuBkQgPokEjNTEW8oo80ew_vAD_2-N_68ekW5Od2B7uAW2w2hY4TP4cIvafiNhlZbkH7R39uzgPEbXzEj0V8Ow89xphG0bf3-nhqEnFZoyxo0PV_txph0EfOFyZ3Ak4FwkdoOhnsYipEG6TIhtPrUMZFPpUS8ADOsKQ0GJKsiFA8-I1GhUlSIfMLAahOzhNLMz1drbuSvjh-R2KZjzbhxWeBZax9CMLMUVo8J_RSNjaTiRtw2oxuH6l41S_agkUPNcPJvQ5TtbY7dKM"
-                alt="Encrypted data visual"
+                alt="Visuel de données chiffrées"
                 className="absolute right-0 bottom-0 w-1/2 h-full object-cover opacity-10 group-hover:opacity-20 transition-opacity"
               />
             </div>
@@ -172,10 +182,10 @@ const Home = () => {
             <p className="text-xl text-on-primary/80 mb-12 leading-relaxed">{t('home.cta.subtitle')}</p>
             <div className="flex flex-col sm:flex-row justify-center gap-6">
               <Link to="/signup" className="bg-surface-container-lowest text-primary px-10 py-5 rounded-full font-headline font-extrabold text-lg shadow-2xl hover:scale-105 transition-transform">
-                {t('home.hero.cta_start')}
+                {t('home.cta.start')}
               </Link>
               <Link to="/about" className="bg-transparent border-2 border-on-primary text-on-primary px-10 py-5 rounded-full font-headline font-bold text-lg hover:bg-white/10 transition-colors">
-                {t('home.hero.cta_manifesto')}
+                {t('home.cta.manifesto')}
               </Link>
             </div>
           </div>

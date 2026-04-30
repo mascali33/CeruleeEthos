@@ -16,10 +16,11 @@
   },
   "home": {
     "hero": {
-      "title": "The Cloud, Liberated.",
-      "subtitle": "Take back control of your digital life with ethical, open-source, community-managed infrastructure.",
-      "cta_start": "Start Free Trial",
-      "cta_manifesto": "Read Our Manifesto",
+      "badge": "100% Carbon Neutral Hosting",
+      "title": "Digital Sovereignty",
+      "title_prefix": "Take back your ",
+      "subtitle": "Transparent, ethical, community-owned hosting for the next generation of the web. We build gardens, not black boxes.",
+      "cta_start": "Host with Integrity",
       "uptime": "Uptime: 99.9%",
       "verified": "Verified via public proof of state on blockchain."
     },
@@ -51,7 +52,9 @@
     },
     "cta": {
       "title": "Ready to leave the black boxes?",
-      "subtitle": "Join Ethereal Commons today and support a decentralized and ethical web for all."
+      "subtitle": "Join Ethereal Commons today and support a decentralized and ethical web for all.",
+      "start": "Start Free Trial",
+      "manifesto": "Read Our Manifesto"
     }
   },
   "about": {

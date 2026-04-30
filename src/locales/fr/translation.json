@@ -16,10 +16,11 @@
   },
   "home": {
     "hero": {
-      "title": "Le Cloud, Libéré.",
-      "subtitle": "Reprenez le contrôle de votre vie numérique avec une infrastructure éthique, open-source et gérée par la communauté.",
-      "cta_start": "Commencer l'Essai Gratuit",
-      "cta_manifesto": "Lire Notre Manifeste",
+      "badge": "Hébergement 100% Neutre en Carbone",
+      "title": "Souveraineté Numérique",
+      "title_prefix": "Récupérez votre ",
+      "subtitle": "Un hébergement transparent, éthique et appartenant à la communauté pour la prochaine génération du web. Nous construisons des jardins, pas des boîtes noires.",
+      "cta_start": "Héberger avec Intégrité",
       "uptime": "Uptime: 99.9%",
       "verified": "Vérifié via preuve d'état publique sur blockchain."
     },
@@ -51,7 +52,9 @@
     },
     "cta": {
       "title": "Prêt à quitter les boîtes noires ?",
-      "subtitle": "Rejoignez Ethereal Commons aujourd'hui et soutenez un web décentralisé et éthique pour tous."
+      "subtitle": "Rejoignez Ethereal Commons aujourd'hui et soutenez un web décentralisé et éthique pour tous.",
+      "start": "Commencer l'Essai Gratuit",
+      "manifesto": "Lire Notre Manifeste"
     }
   },
   "about": {
@@ -112,7 +115,7 @@
       "form_title": "Sondages & Formulaires",
       "form_desc": "Collectez des données de manière respectueuse et sécurisée.",
       "dev_title": "Hébergement Code",
-      "dev_desc": "Gérez vos projets logiciels avec une instance GitLab ou Forgejo."
+      "dev_desc": "Gerez vos projets logiciels avec une instance GitLab ou Forgejo."
     }
   },
   "signup": {

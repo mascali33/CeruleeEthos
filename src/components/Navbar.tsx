@@ -21,7 +21,7 @@ const Navbar = () => {
         <div className="hidden md:flex items-center gap-10 font-headline text-sm tracking-tight font-medium">
           {navLinks.map((link) => (
             <Link
-              key={link.path}
+              key={link.name}
               to={link.path}
               className={`${
                 location.pathname === link.path
