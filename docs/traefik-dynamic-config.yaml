@@ -1,0 +1,14 @@
+http:
+  middlewares:
+    spa-rewrite:
+      errors:
+        status:
+          - "404"
+        query: "/index.html"
+        service: app-service
+
+  services:
+    app-service:
+      loadBalancer:
+        servers:
+          - url: "http://app:80"
