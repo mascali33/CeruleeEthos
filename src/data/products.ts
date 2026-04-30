@@ -14,6 +14,7 @@ export interface Product {
   // Metadata for Services page layout
   gridSpan?: 'small' | 'medium' | 'large';
   variant?: 'featured' | 'secondary' | 'video' | 'chat' | 'note' | 'horizontal';
+  order?: number;
 }
 
 export const PRODUCTS: Product[] = [
@@ -40,6 +41,7 @@ export const PRODUCTS: Product[] = [
     color: 'text-primary',
     gridSpan: 'large',
     variant: 'featured',
+    order: 1,
   },
   {
     id: 'notes',
@@ -53,6 +55,7 @@ export const PRODUCTS: Product[] = [
     color: 'text-secondary',
     gridSpan: 'small',
     variant: 'note',
+    order: 5,
   },
   {
     id: 'budget',
@@ -97,6 +100,7 @@ export const FEATURED_SERVICES: Product[] = [
     color: 'secondary',
     gridSpan: 'small',
     variant: 'secondary',
+    order: 2,
   },
   {
     id: 'peertube',
@@ -110,18 +114,20 @@ export const FEATURED_SERVICES: Product[] = [
     image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBkHIARu0NQ6-OSeCIlrVjTqqoSgVfcXo0TuCUxw8uMMiwXGEFCEe2k3SZMUF6RCxy7LvzwEnk5AD8rjjjV9ulzbMZXEZg_t8ZtMIinysMJfj7P3-chYDj6-t_KUUHt_jR-D9IBYvS7pCmeLQXkNe7TIDxOl5PEJCfLVFC1zSXs4oYNM7Glw1piLDwY_23YVwk3eSZxUoyFN5njdKmXubr8lvSNPK9Dwsf9zIJR9zPATB44HCfY_nY1O-Ft1mE5Jx5i51-slxxLgSo',
     gridSpan: 'small',
     variant: 'video',
+    order: 3,
   },
   {
     id: 'matrix',
     name: 'Matrix Chat',
     shortDescription: 'Communication sécurisée',
-    description: 'Communication sécurisée et décentralisée. Discutez avec n\'importe qui sur n\'importe quel serveur avec un chiffrement robuste.',
+    description: 'Communication sécurisée and décentralisée. Discutez avec n\'importe qui sur n\'importe quel serveur avec un chiffrement robuste.',
     price: 0,
     icon: 'chat_bubble',
     isAddon: false,
     tags: ['Passerelles disponibles'],
     gridSpan: 'small',
     variant: 'chat',
+    order: 4,
   },
   {
     id: 'gitea',
@@ -134,15 +140,11 @@ export const FEATURED_SERVICES: Product[] = [
     image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDf-r-m0IO-qnsc8TKZ8FM_e-RplsqgXD0RtyiB0E42x9YJ5mfvxo6T4PBrA0L6ZesnO5RqVYLOv4LEYtOd3BtysOMuW3ALJliluJDFmfxYKzAVHTppdQiSzCwPqCAr5pUpGjPeXSb1zTWI4J1b5aGMv0XcC6w-cziffSABSN3epg2XPxy7bz84LS380mdrXfQfthww1QCPctEpnVi7teURnOqp1ScGENUta4wOQiOrk9CLyUe1V0PcC5FMdPDytpFO9G-7kiDByFI',
     gridSpan: 'medium',
     variant: 'horizontal',
+    order: 6,
   },
 ];
 
 export const SERVICES_PAGE_LIST = [
-  ...PRODUCTS.filter(p => p.gridSpan), // Only those with explicit grid config
+  ...PRODUCTS.filter(p => p.gridSpan),
   ...FEATURED_SERVICES
-].sort((a, b) => {
-    // Keep Nextcloud first for the bento layout
-    if (a.id === 'cloud') return -1;
-    if (b.id === 'cloud') return 1;
-    return 0;
-});
+].sort((a, b) => (a.order || 99) - (b.order || 99));
