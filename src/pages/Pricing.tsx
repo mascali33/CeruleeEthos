@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { PRODUCTS } from '../data/products';
 
 const Pricing = () => {
-  const [mode, setMode] = useState<'personnel' | 'professionnel'>('professionnel');
+  const navigate = useNavigate();
+  const [mode, setMode] = useState<'personnel' | 'professionnel'>('personnel');
   const [capacity, setCapacity] = useState(24);
 
   const baseProduct = PRODUCTS.find(p => p.isBase) || PRODUCTS[0];
@@ -61,6 +63,26 @@ const Pricing = () => {
       ...addonQuantities,
       [addonId]: Math.min(maxVal, Math.max(1, isNaN(val) ? 1 : val))
     });
+  };
+
+  const handleSignUp = () => {
+    const params = new URLSearchParams();
+    params.set('mode', mode);
+    params.set('capacity', capacity.toString());
+
+    const activeAddons = Object.entries(addons)
+      .filter(([_, active]) => active)
+      .map(([id]) => id)
+      .join(',');
+    if (activeAddons) params.set('addons', activeAddons);
+
+    const quantities = Object.entries(addonQuantities)
+      .filter(([id]) => addons[id])
+      .map(([id, q]) => `${id}:${q}`)
+      .join(',');
+    if (quantities) params.set('quantities', quantities);
+
+    navigate(`/signup?${params.toString()}`);
   };
 
   return (
@@ -233,7 +255,10 @@ const Pricing = () => {
                   <span className="text-outline-variant text-lg">/mois</span>
                 </div>
               </div>
-              <button className="w-full bg-primary text-on-primary py-5 rounded-full text-lg font-bold shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-3">
+              <button
+                onClick={handleSignUp}
+                className="w-full bg-primary text-on-primary py-5 rounded-full text-lg font-bold shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-3"
+              >
                 Démarrer votre essai gratuit
                 <span className="material-symbols-outlined">arrow_forward</span>
               </button>

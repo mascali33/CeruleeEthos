@@ -1,22 +1,32 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { PRODUCTS } from '../data/products';
 
 const SignUp = () => {
-  const [mode, setMode] = useState<'personnel' | 'professionnel'>('personnel');
-  const [capacity, setCapacity] = useState(24);
+  const [searchParams] = useSearchParams();
+
+  const [mode, setMode] = useState<'personnel' | 'professionnel'>((searchParams.get('mode') as any) || 'personnel');
+  const [capacity, setCapacity] = useState(parseInt(searchParams.get('capacity') || '24'));
 
   const baseProduct = PRODUCTS.find(p => p.isBase) || PRODUCTS[0];
   const addonProducts = PRODUCTS.filter(p => p.isAddon);
 
+  const initialAddons = searchParams.get('addons')?.split(',') || ['cloud'];
   const [pack, setPack] = useState<Record<string, boolean>>({
-    cloud: true,
-    ...Object.fromEntries(addonProducts.map(p => [p.id, p.id === 'cloud']))
+    ...Object.fromEntries(addonProducts.map(p => [p.id, initialAddons.includes(p.id)]))
   });
 
-  const [addonQuantities, setAddonQuantities] = useState<Record<string, number>>(
-    Object.fromEntries(addonProducts.filter(p => p.allowsCustomQuantity).map(p => [p.id, 5]))
+  const initialQuantities = Object.fromEntries(
+    (searchParams.get('quantities')?.split(',') || [])
+      .map(q => q.split(':'))
+      .filter(([id]) => id)
+      .map(([id, val]) => [id, parseInt(val)])
   );
+
+  const [addonQuantities, setAddonQuantities] = useState<Record<string, number>>({
+    ...Object.fromEntries(addonProducts.filter(p => p.allowsCustomQuantity).map(p => [p.id, 5])),
+    ...initialQuantities
+  });
 
   const effectiveCapacity = mode === 'personnel' ? 1 : capacity;
 
@@ -208,7 +218,7 @@ const SignUp = () => {
                           >
                             <span className="material-symbols-outlined text-[14px]">remove</span>
                           </button>
-                          <div className="flex flex-col items-center min-w-[1.5rem]">
+                          <div className="flex flex-col items-center px-1 min-w-[1.5rem]">
                             <input
                               type="number"
                               min="1"
