@@ -10,8 +10,8 @@ const Pricing = () => {
 
   const [addons, setAddons] = useState<Record<string, boolean>>({
     cloud: true,
-    budget: true,
-    ...Object.fromEntries(addonProducts.map(p => [p.id, p.id === 'cloud' || p.id === 'budget']))
+    password: true,
+    ...Object.fromEntries(addonProducts.map(p => [p.id, p.id === 'cloud' || p.id === 'password']))
   });
 
   const effectiveCapacity = mode === 'personnel' ? 1 : capacity;
