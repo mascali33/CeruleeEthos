@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { PRODUCTS } from '../data/products';
 
@@ -20,6 +20,23 @@ const SignUp = () => {
 
   const effectiveCapacity = mode === 'personnel' ? 1 : capacity;
 
+  // Validation: Addon licenses cannot exceed base product capacity
+  useEffect(() => {
+    if (mode === 'professionnel') {
+      const updatedQuantities = { ...addonQuantities };
+      let changed = false;
+      Object.keys(updatedQuantities).forEach(id => {
+        if (updatedQuantities[id] > capacity) {
+          updatedQuantities[id] = capacity;
+          changed = true;
+        }
+      });
+      if (changed) {
+        setAddonQuantities(updatedQuantities);
+      }
+    }
+  }, [capacity, mode]);
+
   const calculateTotal = () => {
     let total = baseProduct.price * effectiveCapacity;
     addonProducts.forEach(addon => {
@@ -39,7 +56,11 @@ const SignUp = () => {
   };
 
   const updateQuantity = (addonId: string, val: number) => {
-    setAddonQuantities({ ...addonQuantities, [addonId]: Math.max(1, val) });
+    const maxVal = mode === 'professionnel' ? capacity : 1;
+    setAddonQuantities({
+      ...addonQuantities,
+      [addonId]: Math.min(maxVal, Math.max(1, isNaN(val) ? 1 : val))
+    });
   };
 
   return (
@@ -187,9 +208,16 @@ const SignUp = () => {
                           >
                             <span className="material-symbols-outlined text-[14px]">remove</span>
                           </button>
-                          <div className="flex flex-col items-center px-1 min-w-[1.5rem]">
-                            <span className="text-xs font-bold text-on-background leading-none">{(addonQuantities[item.id] || 1)}</span>
-                            <span className="text-[7px] font-bold uppercase tracking-tighter text-outline-variant">{item.quantityLabel || 'Qté'}</span>
+                          <div className="flex flex-col items-center min-w-[1.5rem]">
+                            <input
+                              type="number"
+                              min="1"
+                              max={capacity}
+                              value={addonQuantities[item.id] || 1}
+                              onChange={(e) => updateQuantity(item.id, parseInt(e.target.value))}
+                              className="w-8 bg-transparent text-center font-bold text-[12px] text-on-background border-0 focus:ring-0 p-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                            />
+                            <span className="text-[7px] font-bold uppercase tracking-tighter text-outline-variant leading-none">{item.quantityLabel || 'Qté'}</span>
                           </div>
                           <button
                             type="button"

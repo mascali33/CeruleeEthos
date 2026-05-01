@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { PRODUCTS } from '../data/products';
 
 const Pricing = () => {
@@ -20,6 +20,23 @@ const Pricing = () => {
 
   const effectiveCapacity = mode === 'personnel' ? 1 : capacity;
 
+  // Validation: Addon licenses cannot exceed base product capacity
+  useEffect(() => {
+    if (mode === 'professionnel') {
+      const updatedQuantities = { ...addonQuantities };
+      let changed = false;
+      Object.keys(updatedQuantities).forEach(id => {
+        if (updatedQuantities[id] > capacity) {
+          updatedQuantities[id] = capacity;
+          changed = true;
+        }
+      });
+      if (changed) {
+        setAddonQuantities(updatedQuantities);
+      }
+    }
+  }, [capacity, mode]);
+
   const calculateMonthly = () => {
     let total = baseProduct.price * effectiveCapacity;
     addonProducts.forEach(addon => {
@@ -39,7 +56,11 @@ const Pricing = () => {
   };
 
   const updateQuantity = (addonId: string, val: number) => {
-    setAddonQuantities({ ...addonQuantities, [addonId]: Math.max(1, val) });
+    const maxVal = mode === 'professionnel' ? capacity : 1;
+    setAddonQuantities({
+      ...addonQuantities,
+      [addonId]: Math.min(maxVal, Math.max(1, isNaN(val) ? 1 : val))
+    });
   };
 
   return (
@@ -145,9 +166,16 @@ const Pricing = () => {
                         >
                           <span className="material-symbols-outlined text-xs">remove</span>
                         </button>
-                        <div className="flex flex-col items-center px-2 min-w-[2.5rem]">
-                          <span className="text-[14px] font-bold text-on-background leading-none">{(addonQuantities[addon.id] || 1)}</span>
-                          <span className="text-[8px] font-bold uppercase tracking-tighter text-outline-variant">{addon.quantityLabel || 'Qté'}</span>
+                        <div className="flex flex-col items-center min-w-[2.5rem]">
+                          <input
+                            type="number"
+                            min="1"
+                            max={capacity}
+                            value={addonQuantities[addon.id] || 1}
+                            onChange={(e) => updateQuantity(addon.id, parseInt(e.target.value))}
+                            className="w-10 bg-transparent text-center font-bold text-[14px] text-on-background border-0 focus:ring-0 p-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                          />
+                          <span className="text-[8px] font-bold uppercase tracking-tighter text-outline-variant leading-none">{addon.quantityLabel || 'Qté'}</span>
                         </div>
                         <button
                           onClick={() => updateQuantity(addon.id, (addonQuantities[addon.id] || 1) + 1)}
