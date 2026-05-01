@@ -22,17 +22,18 @@ const Home = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 }}
-                className="font-headline text-6xl lg:text-8xl font-extrabold tracking-tighter text-on-surface leading-[0.9] mb-8"
+                className="font-headline text-5xl md:text-7xl font-extrabold tracking-tight text-on-surface mb-8 leading-[1.1]"
               >
-                Souveraineté numérique <br /><span className="text-primary">pour tous.</span>
+                Récupérez votre <br/>
+                <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">Souveraineté Numérique</span>
               </motion.h1>
               <motion.p
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
-                className="text-xl text-on-surface-variant leading-relaxed max-w-xl mb-12 font-medium"
+                className="text-xl text-on-surface-variant leading-relaxed max-w-xl mb-12"
               >
-                Libérez vos données des géants de la tech. Ethereal Commons fournit un hébergement éthique, open-source et transparent, géré par un collectif qui vous place au premier plan.
+                Un hébergement transparent, éthique et appartenant à la communauté pour la prochaine génération du web. Nous construisons des jardins, pas des boîtes noires.
               </motion.p>
               <motion.div
                 initial={{ opacity: 0, y: 20 }}

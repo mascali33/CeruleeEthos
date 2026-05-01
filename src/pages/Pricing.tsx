@@ -1,23 +1,45 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { PRICING_DATA } from '../data/products';
+import { PRODUCTS } from '../data/products';
 import PageTransition from '../components/PageTransition';
 
 const Pricing = () => {
   const navigate = useNavigate();
   const [mode, setMode] = useState<'personnel' | 'professionnel'>('personnel');
-  const [capacity, setCapacity] = useState(5);
-  const [addons, setAddons] = useState<Record<string, boolean>>({});
-  const [addonQuantities, setAddonQuantities] = useState<Record<string, number>>({});
+  const [capacity, setCapacity] = useState(24);
 
-  const { baseProduct, addonProducts } = PRICING_DATA;
+  const baseProduct = PRODUCTS.find(p => p.isBase) || PRODUCTS[0];
+  const addonProducts = PRODUCTS.filter(p => p.isAddon);
+
+  const [addons, setAddons] = useState<Record<string, boolean>>({
+    cloud: true,
+    password: true,
+    ...Object.fromEntries(addonProducts.map(p => [p.id, p.id === 'cloud' || p.id === 'password']))
+  });
+
+  const [addonQuantities, setAddonQuantities] = useState<Record<string, number>>(
+    Object.fromEntries(addonProducts.filter(p => p.allowsCustomQuantity).map(p => [p.id, 5]))
+  );
+
   const effectiveCapacity = mode === 'personnel' ? 1 : capacity;
+
+  // Validation: Addon licenses cannot exceed base product capacity
+  useEffect(() => {
+    if (mode === 'professionnel') {
+      const updatedQuantities = { ...addonQuantities };
+      let changed = false;
+      Object.keys(updatedQuantities).forEach(id => {
+        if (updatedQuantities[id] > capacity) {
+          updatedQuantities[id] = capacity;
+          changed = true;
+        }
+      });
+      if (changed) setAddonQuantities(updatedQuantities);
+    }
+  }, [capacity, mode]);
 
   const toggleAddon = (id: string) => {
     setAddons(prev => ({ ...prev, [id]: !prev[id] }));
-    if (!addons[id]) {
-      setAddonQuantities(prev => ({ ...prev, [id]: 1 }));
-    }
   };
 
   const updateQuantity = (id: string, val: number) => {
@@ -40,19 +62,18 @@ const Pricing = () => {
   };
 
   const handleSignUp = () => {
-    navigate('/signup');
+    const selectedAddons = Object.entries(addons).filter(([_, val]) => val).map(([id]) => id).join(',');
+    const quantities = Object.entries(addonQuantities).map(([id, q]) => `${id}:${q}`).join(',');
+    navigate(`/signup?mode=${mode}&capacity=${effectiveCapacity}&addons=${selectedAddons}&quantities=${quantities}`);
   };
 
   return (
     <PageTransition>
       <main className="pt-32 pb-24 px-6 md:px-12 max-w-7xl mx-auto">
         <header className="text-center mb-24">
-          <span className="inline-block px-4 py-1.5 mb-6 text-xs font-bold tracking-widest uppercase bg-primary-container text-on-primary-container rounded-full">
-            Tarification transparente
-          </span>
+          <span className="inline-block px-4 py-1.5 mb-6 text-xs font-bold tracking-widest uppercase bg-primary-container text-on-primary-container rounded-full">Tarification transparente</span>
           <h1 className="text-5xl md:text-7xl font-extrabold font-headline tracking-tighter text-on-surface leading-tight mb-8">
-            Investissez dans votre <br />
-            <span className="text-primary italic">Souveraineté</span>
+            Investissez dans votre <br /><span className="text-primary italic">Souveraineté</span>
           </h1>
           <p className="text-xl text-on-surface-variant max-w-2xl mx-auto font-medium">
             Pas de frais cachés. Pas de niveaux complexes. Juste une tarification juste et prévisible qui soutient un écosystème numérique durable.

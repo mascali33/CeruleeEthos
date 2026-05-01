@@ -1,20 +1,51 @@
-import { useState } from 'react';
-import { PRICING_DATA } from '../data/products';
+import { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import PageTransition from '../components/PageTransition';
+import { PRODUCTS } from '../data/products';
 
 const SignUp = () => {
-  const [mode, setMode] = useState<'personnel' | 'professionnel'>('personnel');
-  const [capacity, setCapacity] = useState(1);
-  const [pack, setPack] = useState<Record<string, boolean>>({});
-  const [addonQuantities, setAddonQuantities] = useState<Record<string, number>>({});
+  const [searchParams] = useSearchParams();
 
-  const { baseProduct, addonProducts } = PRICING_DATA;
+  const [mode, setMode] = useState<'personnel' | 'professionnel'>((searchParams.get('mode') as any) || 'personnel');
+  const [capacity, setCapacity] = useState(parseInt(searchParams.get('capacity') || '24'));
+
+  const baseProduct = PRODUCTS.find(p => p.isBase) || PRODUCTS[0];
+  const addonProducts = PRODUCTS.filter(p => p.isAddon);
+
+  const initialAddons = searchParams.get('addons')?.split(',') || ['cloud'];
+  const [pack, setPack] = useState<Record<string, boolean>>({
+    ...Object.fromEntries(addonProducts.map(p => [p.id, initialAddons.includes(p.id)]))
+  });
+
+  const initialQuantities = Object.fromEntries(
+    (searchParams.get('quantities')?.split(',') || [])
+      .map(q => q.split(':'))
+      .filter(([id]) => id)
+      .map(([id, val]) => [id, parseInt(val)])
+  );
+
+  const [addonQuantities, setAddonQuantities] = useState<Record<string, number>>({
+    ...Object.fromEntries(addonProducts.filter(p => p.allowsCustomQuantity).map(p => [p.id, 5])),
+    ...initialQuantities
+  });
+
+  // Re-validate quantities when capacity changes
+  useEffect(() => {
+    if (mode === 'professionnel') {
+      const updatedQuantities = { ...addonQuantities };
+      let changed = false;
+      Object.keys(updatedQuantities).forEach(id => {
+        if (updatedQuantities[id] > capacity) {
+          updatedQuantities[id] = capacity;
+          changed = true;
+        }
+      });
+      if (changed) setAddonQuantities(updatedQuantities);
+    }
+  }, [capacity, mode]);
 
   const togglePack = (id: string) => {
     setPack(prev => ({ ...prev, [id]: !prev[id] }));
-    if (!pack[id]) {
-      setAddonQuantities(prev => ({ ...prev, [id]: 1 }));
-    }
   };
 
   const updateQuantity = (id: string, val: number) => {

@@ -4,8 +4,8 @@ const About = () => {
   return (
     <PageTransition>
       <div className="pt-32 pb-24 px-6 md:px-12 max-w-7xl mx-auto">
-        {/* Header Section */}
-        <header className="mb-24 flex flex-col md:flex-row items-center justify-between gap-12">
+        {/* Hero Section */}
+        <header className="mb-24 flex flex-col md:flex-row items-end justify-between gap-12">
           <div className="max-w-2xl">
             <span className="inline-block px-4 py-1.5 mb-6 text-xs font-bold tracking-widest uppercase bg-secondary-container text-on-secondary-container rounded-full">La Charte Éthique</span>
             <h1 className="text-5xl md:text-7xl font-extrabold tracking-tighter text-on-surface leading-[0.9] mb-8">
