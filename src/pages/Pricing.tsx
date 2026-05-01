@@ -121,51 +121,47 @@ const Pricing = () => {
             <h3 className="text-xl font-bold text-on-background mb-6">Modules Complémentaires</h3>
             <div className="space-y-4">
               {addonProducts.map((addon) => (
-                <div key={addon.id} className="space-y-3">
-                  <label
-                    className="flex items-center justify-between p-5 rounded-2xl bg-surface-container-low cursor-pointer hover:bg-surface-container-high transition-colors group"
-                  >
-                    <div className="flex items-center gap-4">
-                      <input
-                        type="checkbox"
-                        className="hidden"
-                        checked={!!addons[addon.id]}
-                        onChange={() => toggleAddon(addon.id)}
-                      />
-                      <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-colors ${addons[addon.id] ? 'border-primary bg-primary' : 'border-outline-variant bg-transparent'}`}>
-                        {addons[addon.id] && <span className="material-symbols-outlined text-xs text-on-primary font-bold">check</span>}
-                      </div>
-                      <div>
-                        <h5 className="font-bold text-sm text-on-background group-hover:text-primary transition-colors">{addon.name}</h5>
-                        <p className="text-xs text-on-surface-variant">{addon.shortDescription}</p>
-                      </div>
+                <div
+                  key={addon.id}
+                  onClick={() => toggleAddon(addon.id)}
+                  className={`flex items-center justify-between p-5 rounded-2xl cursor-pointer transition-all border-2 ${addons[addon.id] ? 'bg-surface-container-low border-primary/20 shadow-sm' : 'bg-surface-container-low/50 border-transparent hover:bg-surface-container-low hover:border-outline-variant/10 group'}`}
+                >
+                  <div className="flex items-center gap-4 flex-1">
+                    <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-colors ${addons[addon.id] ? 'border-primary bg-primary' : 'border-outline-variant bg-transparent'}`}>
+                      {addons[addon.id] && <span className="material-symbols-outlined text-xs text-on-primary font-bold">check</span>}
                     </div>
-                    <span className="text-sm font-bold text-on-background">€{addon.price.toFixed(2)}<span className="text-[10px] text-on-surface-variant ml-1">{addon.allowsCustomQuantity && mode === 'professionnel' ? '/unité' : '/util.'}</span></span>
-                  </label>
+                    <div>
+                      <h5 className={`font-bold text-sm transition-colors ${addons[addon.id] ? 'text-primary' : 'text-on-background group-hover:text-primary'}`}>{addon.name}</h5>
+                      <p className="text-xs text-on-surface-variant">{addon.shortDescription}</p>
+                    </div>
+                  </div>
 
-                  {addon.allowsCustomQuantity && addons[addon.id] && mode === 'professionnel' && (
-                    <div className="flex items-center justify-between px-5 py-3 bg-surface-container-lowest rounded-xl border border-outline-variant/10 animate-in fade-in slide-in-from-top-2 duration-300">
-                      <div className="flex flex-col">
-                        <span className="text-[10px] font-bold uppercase tracking-widest text-primary">{addon.quantityLabel || 'Quantité'}</span>
-                        <span className="text-xs text-on-surface-variant">Définissez le nombre de licences souhaitées</span>
-                      </div>
-                      <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-6" onClick={(e) => e.stopPropagation()}>
+                    {addon.allowsCustomQuantity && addons[addon.id] && mode === 'professionnel' && (
+                      <div className="flex items-center gap-2 bg-surface-container-highest/50 p-1 rounded-lg border border-outline-variant/10">
                         <button
                           onClick={() => updateQuantity(addon.id, (addonQuantities[addon.id] || 1) - 1)}
-                          className="w-8 h-8 rounded-lg bg-surface-container-high flex items-center justify-center hover:bg-primary hover:text-on-primary transition-colors"
+                          className="w-7 h-7 rounded-md bg-surface-container-low flex items-center justify-center hover:bg-primary hover:text-on-primary transition-colors text-on-surface-variant"
                         >
-                          <span className="material-symbols-outlined text-sm">remove</span>
+                          <span className="material-symbols-outlined text-xs">remove</span>
                         </button>
-                        <span className="w-8 text-center font-bold text-on-background">{addonQuantities[addon.id] || 1}</span>
+                        <div className="flex flex-col items-center px-2 min-w-[2.5rem]">
+                          <span className="text-[14px] font-bold text-on-background leading-none">{(addonQuantities[addon.id] || 1)}</span>
+                          <span className="text-[8px] font-bold uppercase tracking-tighter text-outline-variant">{addon.quantityLabel || 'Qté'}</span>
+                        </div>
                         <button
                           onClick={() => updateQuantity(addon.id, (addonQuantities[addon.id] || 1) + 1)}
-                          className="w-8 h-8 rounded-lg bg-surface-container-high flex items-center justify-center hover:bg-primary hover:text-on-primary transition-colors"
+                          className="w-7 h-7 rounded-md bg-surface-container-low flex items-center justify-center hover:bg-primary hover:text-on-primary transition-colors text-on-surface-variant"
                         >
-                          <span className="material-symbols-outlined text-sm">add</span>
+                          <span className="material-symbols-outlined text-xs">add</span>
                         </button>
                       </div>
+                    )}
+                    <div className="text-right">
+                      <span className="text-sm font-bold text-on-background block">€{addon.price.toFixed(2)}</span>
+                      <span className="text-[10px] text-on-surface-variant font-medium tracking-tight">{addon.allowsCustomQuantity && mode === 'professionnel' ? '/unité' : '/util.'}</span>
                     </div>
-                  )}
+                  </div>
                 </div>
               ))}
             </div>

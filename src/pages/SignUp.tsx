@@ -156,54 +156,51 @@ const SignUp = () => {
                 </div>
 
                 {addonProducts.map((item) => (
-                  <div key={item.id} className="flex flex-col gap-2 h-full">
-                    <label className="group cursor-pointer relative flex-1">
-                      <input
-                        type="checkbox"
-                        className="hidden peer"
-                        checked={!!pack[item.id]}
-                        onChange={() => togglePack(item.id)}
-                      />
-                      <div className="p-6 rounded-2xl bg-surface-container-low border border-transparent peer-checked:border-primary peer-checked:bg-surface-container-lowest transition-all flex flex-col gap-3 h-full">
-                        <div className="flex justify-between items-start">
-                          <span className={`material-symbols-outlined ${item.color || 'text-primary'}`}>{item.icon}</span>
-                          <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${pack[item.id] ? 'bg-primary border-primary' : 'border-outline-variant'}`}>
-                            {pack[item.id] && <span className="material-symbols-outlined text-[14px] text-white">check</span>}
-                          </div>
-                        </div>
-                        <div>
-                          <p className="font-bold font-headline">{item.name}</p>
-                          <p className="text-xs text-on-surface-variant">{item.shortDescription}</p>
-                        </div>
-                        <p className="text-sm font-bold text-primary mt-auto">
-                          {item.price.toFixed(2).replace('.', ',')}€
-                          <span className="text-xs text-on-surface-variant font-normal"> {item.allowsCustomQuantity && mode === 'professionnel' ? '/ unité' : '/ mois'}</span>
-                        </p>
+                  <div
+                    key={item.id}
+                    onClick={() => togglePack(item.id)}
+                    className={`p-6 rounded-2xl border transition-all flex flex-col gap-3 cursor-pointer ${pack[item.id] ? 'bg-surface-container-lowest border-primary shadow-sm' : 'bg-surface-container-low border-transparent hover:border-outline-variant/20'}`}
+                  >
+                    <div className="flex justify-between items-start">
+                      <span className={`material-symbols-outlined ${item.color || 'text-primary'}`}>{item.icon}</span>
+                      <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${pack[item.id] ? 'bg-primary border-primary' : 'border-outline-variant'}`}>
+                        {pack[item.id] && <span className="material-symbols-outlined text-[14px] text-white">check</span>}
                       </div>
-                    </label>
+                    </div>
+                    <div>
+                      <p className="font-bold font-headline">{item.name}</p>
+                      <p className="text-xs text-on-surface-variant">{item.shortDescription}</p>
+                    </div>
 
-                    {item.allowsCustomQuantity && pack[item.id] && mode === 'professionnel' && (
-                      <div className="p-4 rounded-xl bg-surface-container-lowest border border-primary/20 flex items-center justify-between animate-in fade-in slide-in-from-top-2 duration-300">
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-primary">{item.quantityLabel || 'Qté'}</span>
-                        <div className="flex items-center gap-3">
+                    <div className="flex items-center justify-between mt-auto pt-2" onClick={(e) => e.stopPropagation()}>
+                      <div className="flex flex-col">
+                        <p className="text-sm font-bold text-primary">{item.price.toFixed(2).replace('.', ',')}€</p>
+                        <p className="text-[10px] text-on-surface-variant font-medium tracking-tight">{item.allowsCustomQuantity && mode === 'professionnel' ? '/ unité' : '/ mois'}</p>
+                      </div>
+
+                      {item.allowsCustomQuantity && pack[item.id] && mode === 'professionnel' && (
+                        <div className="flex items-center gap-2 bg-surface-container-highest/50 p-0.5 rounded-lg border border-outline-variant/10">
                           <button
                             type="button"
                             onClick={() => updateQuantity(item.id, (addonQuantities[item.id] || 1) - 1)}
-                            className="w-6 h-6 rounded bg-surface-container-high flex items-center justify-center hover:bg-primary hover:text-on-primary transition-colors"
+                            className="w-6 h-6 rounded bg-surface-container-low flex items-center justify-center hover:bg-primary hover:text-on-primary transition-colors text-on-surface-variant"
                           >
-                            <span className="material-symbols-outlined text-xs">remove</span>
+                            <span className="material-symbols-outlined text-[14px]">remove</span>
                           </button>
-                          <span className="text-xs font-bold w-4 text-center">{addonQuantities[item.id] || 1}</span>
+                          <div className="flex flex-col items-center px-1 min-w-[1.5rem]">
+                            <span className="text-xs font-bold text-on-background leading-none">{(addonQuantities[item.id] || 1)}</span>
+                            <span className="text-[7px] font-bold uppercase tracking-tighter text-outline-variant">{item.quantityLabel || 'Qté'}</span>
+                          </div>
                           <button
                             type="button"
                             onClick={() => updateQuantity(item.id, (addonQuantities[item.id] || 1) + 1)}
-                            className="w-6 h-6 rounded bg-surface-container-high flex items-center justify-center hover:bg-primary hover:text-on-primary transition-colors"
+                            className="w-6 h-6 rounded bg-surface-container-low flex items-center justify-center hover:bg-primary hover:text-on-primary transition-colors text-on-surface-variant"
                           >
-                            <span className="material-symbols-outlined text-xs">add</span>
+                            <span className="material-symbols-outlined text-[14px]">add</span>
                           </button>
                         </div>
-                      </div>
-                    )}
+                      )}
+                    </div>
                   </div>
                 ))}
               </div>
