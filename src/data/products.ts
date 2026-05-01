@@ -162,3 +162,8 @@ export const SERVICES_PAGE_LIST = [
   ...PRODUCTS.filter(p => p.gridSpan),
   ...FEATURED_SERVICES
 ].sort((a, b) => (a.order || 99) - (b.order || 99));
+
+export const PRICING_DATA = {
+  baseProduct: PRODUCTS.find(p => p.isBase) || PRODUCTS[0],
+  addonProducts: PRODUCTS.filter(p => p.isAddon),
+};
