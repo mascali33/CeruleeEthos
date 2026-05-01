@@ -14,20 +14,32 @@ const SignUp = () => {
     ...Object.fromEntries(addonProducts.map(p => [p.id, p.id === 'cloud']))
   });
 
+  const [addonQuantities, setAddonQuantities] = useState<Record<string, number>>(
+    Object.fromEntries(addonProducts.filter(p => p.allowsCustomQuantity).map(p => [p.id, 5]))
+  );
+
   const effectiveCapacity = mode === 'personnel' ? 1 : capacity;
 
   const calculateTotal = () => {
-    let totalPerUser = baseProduct.price;
+    let total = baseProduct.price * effectiveCapacity;
     addonProducts.forEach(addon => {
       if (pack[addon.id]) {
-        totalPerUser += addon.price;
+        if (addon.allowsCustomQuantity && mode === 'professionnel') {
+          total += addon.price * (addonQuantities[addon.id] || 1);
+        } else {
+          total += addon.price * effectiveCapacity;
+        }
       }
     });
-    return (totalPerUser * effectiveCapacity).toFixed(2);
+    return total.toFixed(2);
   };
 
   const togglePack = (addonId: string) => {
     setPack({ ...pack, [addonId]: !pack[addonId] });
+  };
+
+  const updateQuantity = (addonId: string, val: number) => {
+    setAddonQuantities({ ...addonQuantities, [addonId]: Math.max(1, val) });
   };
 
   return (
@@ -144,27 +156,55 @@ const SignUp = () => {
                 </div>
 
                 {addonProducts.map((item) => (
-                  <label key={item.id} className="group cursor-pointer relative">
-                    <input
-                      type="checkbox"
-                      className="hidden peer"
-                      checked={!!pack[item.id]}
-                      onChange={() => togglePack(item.id)}
-                    />
-                    <div className="p-6 rounded-2xl bg-surface-container-low border border-transparent peer-checked:border-primary peer-checked:bg-surface-container-lowest transition-all flex flex-col gap-3 h-full">
-                      <div className="flex justify-between items-start">
-                        <span className={`material-symbols-outlined ${item.color || 'text-primary'}`}>{item.icon}</span>
-                        <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${pack[item.id] ? 'bg-primary border-primary' : 'border-outline-variant'}`}>
-                          {pack[item.id] && <span className="material-symbols-outlined text-[14px] text-white">check</span>}
+                  <div key={item.id} className="flex flex-col gap-2 h-full">
+                    <label className="group cursor-pointer relative flex-1">
+                      <input
+                        type="checkbox"
+                        className="hidden peer"
+                        checked={!!pack[item.id]}
+                        onChange={() => togglePack(item.id)}
+                      />
+                      <div className="p-6 rounded-2xl bg-surface-container-low border border-transparent peer-checked:border-primary peer-checked:bg-surface-container-lowest transition-all flex flex-col gap-3 h-full">
+                        <div className="flex justify-between items-start">
+                          <span className={`material-symbols-outlined ${item.color || 'text-primary'}`}>{item.icon}</span>
+                          <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${pack[item.id] ? 'bg-primary border-primary' : 'border-outline-variant'}`}>
+                            {pack[item.id] && <span className="material-symbols-outlined text-[14px] text-white">check</span>}
+                          </div>
+                        </div>
+                        <div>
+                          <p className="font-bold font-headline">{item.name}</p>
+                          <p className="text-xs text-on-surface-variant">{item.shortDescription}</p>
+                        </div>
+                        <p className="text-sm font-bold text-primary mt-auto">
+                          {item.price.toFixed(2).replace('.', ',')}€
+                          <span className="text-xs text-on-surface-variant font-normal"> {item.allowsCustomQuantity && mode === 'professionnel' ? '/ unité' : '/ mois'}</span>
+                        </p>
+                      </div>
+                    </label>
+
+                    {item.allowsCustomQuantity && pack[item.id] && mode === 'professionnel' && (
+                      <div className="p-4 rounded-xl bg-surface-container-lowest border border-primary/20 flex items-center justify-between animate-in fade-in slide-in-from-top-2 duration-300">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-primary">{item.quantityLabel || 'Qté'}</span>
+                        <div className="flex items-center gap-3">
+                          <button
+                            type="button"
+                            onClick={() => updateQuantity(item.id, (addonQuantities[item.id] || 1) - 1)}
+                            className="w-6 h-6 rounded bg-surface-container-high flex items-center justify-center hover:bg-primary hover:text-on-primary transition-colors"
+                          >
+                            <span className="material-symbols-outlined text-xs">remove</span>
+                          </button>
+                          <span className="text-xs font-bold w-4 text-center">{addonQuantities[item.id] || 1}</span>
+                          <button
+                            type="button"
+                            onClick={() => updateQuantity(item.id, (addonQuantities[item.id] || 1) + 1)}
+                            className="w-6 h-6 rounded bg-surface-container-high flex items-center justify-center hover:bg-primary hover:text-on-primary transition-colors"
+                          >
+                            <span className="material-symbols-outlined text-xs">add</span>
+                          </button>
                         </div>
                       </div>
-                      <div>
-                        <p className="font-bold font-headline">{item.name}</p>
-                        <p className="text-xs text-on-surface-variant">{item.shortDescription}</p>
-                      </div>
-                      <p className="text-sm font-bold text-primary mt-auto">{item.price.toFixed(2).replace('.', ',')}€ <span className="text-xs text-on-surface-variant font-normal">/ mois</span></p>
-                    </div>
-                  </label>
+                    )}
+                  </div>
                 ))}
               </div>
             </section>

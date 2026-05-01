@@ -14,20 +14,32 @@ const Pricing = () => {
     ...Object.fromEntries(addonProducts.map(p => [p.id, p.id === 'cloud' || p.id === 'password']))
   });
 
+  const [addonQuantities, setAddonQuantities] = useState<Record<string, number>>(
+    Object.fromEntries(addonProducts.filter(p => p.allowsCustomQuantity).map(p => [p.id, 5]))
+  );
+
   const effectiveCapacity = mode === 'personnel' ? 1 : capacity;
 
   const calculateMonthly = () => {
-    let perUserTotal = baseProduct.price;
+    let total = baseProduct.price * effectiveCapacity;
     addonProducts.forEach(addon => {
       if (addons[addon.id]) {
-        perUserTotal += addon.price;
+        if (addon.allowsCustomQuantity && mode === 'professionnel') {
+          total += addon.price * (addonQuantities[addon.id] || 1);
+        } else {
+          total += addon.price * effectiveCapacity;
+        }
       }
     });
-    return (perUserTotal * effectiveCapacity).toFixed(2);
+    return total.toFixed(2);
   };
 
   const toggleAddon = (addonId: string) => {
     setAddons({ ...addons, [addonId]: !addons[addonId] });
+  };
+
+  const updateQuantity = (addonId: string, val: number) => {
+    setAddonQuantities({ ...addonQuantities, [addonId]: Math.max(1, val) });
   };
 
   return (
@@ -109,27 +121,52 @@ const Pricing = () => {
             <h3 className="text-xl font-bold text-on-background mb-6">Modules Complémentaires</h3>
             <div className="space-y-4">
               {addonProducts.map((addon) => (
-                <label
-                  key={addon.id}
-                  className="flex items-center justify-between p-5 rounded-2xl bg-surface-container-low cursor-pointer hover:bg-surface-container-high transition-colors group"
-                >
-                  <div className="flex items-center gap-4">
-                    <input
-                      type="checkbox"
-                      className="hidden"
-                      checked={!!addons[addon.id]}
-                      onChange={() => toggleAddon(addon.id)}
-                    />
-                    <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-colors ${addons[addon.id] ? 'border-primary bg-primary' : 'border-outline-variant bg-transparent'}`}>
-                      {addons[addon.id] && <span className="material-symbols-outlined text-xs text-on-primary font-bold">check</span>}
+                <div key={addon.id} className="space-y-3">
+                  <label
+                    className="flex items-center justify-between p-5 rounded-2xl bg-surface-container-low cursor-pointer hover:bg-surface-container-high transition-colors group"
+                  >
+                    <div className="flex items-center gap-4">
+                      <input
+                        type="checkbox"
+                        className="hidden"
+                        checked={!!addons[addon.id]}
+                        onChange={() => toggleAddon(addon.id)}
+                      />
+                      <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-colors ${addons[addon.id] ? 'border-primary bg-primary' : 'border-outline-variant bg-transparent'}`}>
+                        {addons[addon.id] && <span className="material-symbols-outlined text-xs text-on-primary font-bold">check</span>}
+                      </div>
+                      <div>
+                        <h5 className="font-bold text-sm text-on-background group-hover:text-primary transition-colors">{addon.name}</h5>
+                        <p className="text-xs text-on-surface-variant">{addon.shortDescription}</p>
+                      </div>
                     </div>
-                    <div>
-                      <h5 className="font-bold text-sm text-on-background group-hover:text-primary transition-colors">{addon.name}</h5>
-                      <p className="text-xs text-on-surface-variant">{addon.shortDescription}</p>
+                    <span className="text-sm font-bold text-on-background">€{addon.price.toFixed(2)}<span className="text-[10px] text-on-surface-variant ml-1">{addon.allowsCustomQuantity && mode === 'professionnel' ? '/unité' : '/util.'}</span></span>
+                  </label>
+
+                  {addon.allowsCustomQuantity && addons[addon.id] && mode === 'professionnel' && (
+                    <div className="flex items-center justify-between px-5 py-3 bg-surface-container-lowest rounded-xl border border-outline-variant/10 animate-in fade-in slide-in-from-top-2 duration-300">
+                      <div className="flex flex-col">
+                        <span className="text-[10px] font-bold uppercase tracking-widest text-primary">{addon.quantityLabel || 'Quantité'}</span>
+                        <span className="text-xs text-on-surface-variant">Définissez le nombre de licences souhaitées</span>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <button
+                          onClick={() => updateQuantity(addon.id, (addonQuantities[addon.id] || 1) - 1)}
+                          className="w-8 h-8 rounded-lg bg-surface-container-high flex items-center justify-center hover:bg-primary hover:text-on-primary transition-colors"
+                        >
+                          <span className="material-symbols-outlined text-sm">remove</span>
+                        </button>
+                        <span className="w-8 text-center font-bold text-on-background">{addonQuantities[addon.id] || 1}</span>
+                        <button
+                          onClick={() => updateQuantity(addon.id, (addonQuantities[addon.id] || 1) + 1)}
+                          className="w-8 h-8 rounded-lg bg-surface-container-high flex items-center justify-center hover:bg-primary hover:text-on-primary transition-colors"
+                        >
+                          <span className="material-symbols-outlined text-sm">add</span>
+                        </button>
+                      </div>
                     </div>
-                  </div>
-                  <span className="text-sm font-bold text-on-background">€{addon.price.toFixed(2)}<span className="text-[10px] text-on-surface-variant ml-1">/util.</span></span>
-                </label>
+                  )}
+                </div>
               ))}
             </div>
           </div>
@@ -151,10 +188,14 @@ const Pricing = () => {
                 {addonProducts.map((addon) => addons[addon.id] && (
                   <div key={addon.id} className="flex justify-between items-center">
                     <div className="flex items-center gap-2">
-                      <span className="text-on-surface font-medium">{addon.name}</span>
+                      <span className="text-on-surface font-medium">
+                        {addon.name} {addon.allowsCustomQuantity && mode === 'professionnel' ? `(${addonQuantities[addon.id] || 1} ${addon.quantityLabel || 'unité'})` : `(${effectiveCapacity} util.)`}
+                      </span>
                       <span className="text-[10px] bg-secondary-container text-on-secondary-container px-1.5 py-0.5 rounded font-bold uppercase tracking-tighter">Add-On</span>
                     </div>
-                    <span className="text-on-background font-bold">€{(effectiveCapacity * addon.price).toFixed(2)}</span>
+                    <span className="text-on-background font-bold">
+                      €{(addon.allowsCustomQuantity && mode === 'professionnel' ? (addonQuantities[addon.id] || 1) * addon.price : effectiveCapacity * addon.price).toFixed(2)}
+                    </span>
                   </div>
                 ))}
               </div>

@@ -11,6 +11,8 @@ export interface Product {
   color?: string;
   link?: string;
   image?: string;
+  allowsCustomQuantity?: boolean;
+  quantityLabel?: string;
   // Metadata for Services page layout
   gridSpan?: 'small' | 'medium' | 'large';
   variant?: 'featured' | 'secondary' | 'video' | 'chat' | 'note' | 'horizontal';
@@ -84,6 +86,18 @@ export const PRODUCTS: Product[] = [
     price: 2.2,
     icon: 'inventory_2',
     isAddon: true,
+  },
+  {
+    id: 'crm',
+    name: 'CRM Ethique',
+    shortDescription: 'Gestion de la relation membre',
+    description: 'Suivez vos interactions et gérez votre base de membres sans pistage publicitaire.',
+    price: 4.5,
+    icon: 'groups',
+    isAddon: true,
+    allowsCustomQuantity: true,
+    quantityLabel: 'Licences',
+    color: 'text-secondary',
   },
 ];
 
