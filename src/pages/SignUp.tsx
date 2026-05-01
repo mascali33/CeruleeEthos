@@ -1,34 +1,33 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { PRODUCTS } from '../data/products';
 
 const SignUp = () => {
   const [mode, setMode] = useState<'personnel' | 'professionnel'>('personnel');
   const [capacity, setCapacity] = useState(24);
-  const [pack, setPack] = useState({
-    cloud: true,
-    notes: false,
-    budget: false,
-  });
 
-  const basePrice = 4.0; // Mail Service (Always included)
-  const packPrices = {
-    cloud: 5.0,
-    notes: 2.5,
-    budget: 3.0,
-  };
+  const baseProduct = PRODUCTS.find(p => p.isBase) || PRODUCTS[0];
+  const addonProducts = PRODUCTS.filter(p => p.isAddon);
+
+  const [pack, setPack] = useState<Record<string, boolean>>({
+    cloud: true,
+    ...Object.fromEntries(addonProducts.map(p => [p.id, p.id === 'cloud']))
+  });
 
   const effectiveCapacity = mode === 'personnel' ? 1 : capacity;
 
   const calculateTotal = () => {
-    let totalPerUser = basePrice;
-    if (pack.cloud) totalPerUser += packPrices.cloud;
-    if (pack.notes) totalPerUser += packPrices.notes;
-    if (pack.budget) totalPerUser += packPrices.budget;
+    let totalPerUser = baseProduct.price;
+    addonProducts.forEach(addon => {
+      if (pack[addon.id]) {
+        totalPerUser += addon.price;
+      }
+    });
     return (totalPerUser * effectiveCapacity).toFixed(2);
   };
 
-  const togglePack = (item: keyof typeof pack) => {
-    setPack({ ...pack, [item]: !pack[item] });
+  const togglePack = (addonId: string) => {
+    setPack({ ...pack, [addonId]: !pack[addonId] });
   };
 
   return (
@@ -131,43 +130,39 @@ const SignUp = () => {
                 <p className="text-on-surface-variant text-sm">Sélectionnez les services essentiels à votre écosystème.</p>
               </header>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {/* Base Mail Service - Always Included */}
+                {/* Base Product - Always Included */}
                 <div className="p-6 rounded-2xl bg-primary/5 border border-primary/20 flex flex-col gap-3 relative">
                   <div className="flex justify-between items-start">
-                    <span className="material-symbols-outlined text-on-primary-fixed-variant">mail</span>
+                    <span className="material-symbols-outlined text-on-primary-fixed-variant">{baseProduct.icon}</span>
                     <span className="px-2 py-0.5 rounded-full bg-primary-container text-on-primary-container text-[10px] font-bold uppercase tracking-wider">Inclus</span>
                   </div>
                   <div>
-                    <p className="font-bold font-headline">Email Chiffré (Base)</p>
-                    <p className="text-xs text-on-surface-variant">Respect total de la vie privée</p>
+                    <p className="font-bold font-headline">{baseProduct.name} (Base)</p>
+                    <p className="text-xs text-on-surface-variant">{baseProduct.shortDescription}</p>
                   </div>
-                  <p className="text-sm font-bold text-primary">4,00€ <span className="text-xs text-on-surface-variant font-normal">/ mois / util.</span></p>
+                  <p className="text-sm font-bold text-primary">{baseProduct.price.toFixed(2).replace('.', ',')}€ <span className="text-xs text-on-surface-variant font-normal">/ mois / util.</span></p>
                 </div>
 
-                {[
-                  { key: 'cloud', icon: 'cloud', name: 'Stockage Cloud', desc: '50 Go d\'espace sécurisé', price: '5,00€', color: 'text-primary' },
-                  { key: 'notes', icon: 'edit_note', name: 'Notes Partagées', desc: 'Collaboration en temps réel', price: '2,50€', color: 'text-secondary' },
-                  { key: 'budget', icon: 'account_balance_wallet', name: 'Gestion Budget', desc: 'Outils financiers éthiques', price: '3,00€', color: 'text-tertiary' },
-                ].map((item) => (
-                  <label key={item.key} className="group cursor-pointer relative">
+                {addonProducts.map((item) => (
+                  <label key={item.id} className="group cursor-pointer relative">
                     <input
                       type="checkbox"
                       className="hidden peer"
-                      checked={pack[item.key as keyof typeof pack]}
-                      onChange={() => togglePack(item.key as keyof typeof pack)}
+                      checked={!!pack[item.id]}
+                      onChange={() => togglePack(item.id)}
                     />
-                    <div className="p-6 rounded-2xl bg-surface-container-low border border-transparent peer-checked:border-primary peer-checked:bg-surface-container-lowest transition-all flex flex-col gap-3">
+                    <div className="p-6 rounded-2xl bg-surface-container-low border border-transparent peer-checked:border-primary peer-checked:bg-surface-container-lowest transition-all flex flex-col gap-3 h-full">
                       <div className="flex justify-between items-start">
-                        <span className={`material-symbols-outlined ${item.color}`}>{item.icon}</span>
-                        <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${pack[item.key as keyof typeof pack] ? 'bg-primary border-primary' : 'border-outline-variant'}`}>
-                          {pack[item.key as keyof typeof pack] && <span className="material-symbols-outlined text-[14px] text-white">check</span>}
+                        <span className={`material-symbols-outlined ${item.color || 'text-primary'}`}>{item.icon}</span>
+                        <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${pack[item.id] ? 'bg-primary border-primary' : 'border-outline-variant'}`}>
+                          {pack[item.id] && <span className="material-symbols-outlined text-[14px] text-white">check</span>}
                         </div>
                       </div>
                       <div>
                         <p className="font-bold font-headline">{item.name}</p>
-                        <p className="text-xs text-on-surface-variant">{item.desc}</p>
+                        <p className="text-xs text-on-surface-variant">{item.shortDescription}</p>
                       </div>
-                      <p className="text-sm font-bold text-primary">{item.price} <span className="text-xs text-on-surface-variant font-normal">/ mois</span></p>
+                      <p className="text-sm font-bold text-primary mt-auto">{item.price.toFixed(2).replace('.', ',')}€ <span className="text-xs text-on-surface-variant font-normal">/ mois</span></p>
                     </div>
                   </label>
                 ))}
