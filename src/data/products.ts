@@ -85,16 +85,6 @@ export const PRODUCTS: Product[] = [
     icon: 'inventory_2',
     isAddon: true,
   },
-  {
-    id: 'crm',
-    name: 'CRM Mautic',
-    shortDescription: 'Gestion de prospect',
-    description: 'Un outil de gestion de prospect pour rester en contact avec vos usagers.',
-    price: 6.0,
-    icon: 'demography',
-    isAddon: true,
-    color: 'text-tertiary',
-  },
 ];
 
 export const FEATURED_SERVICES: Product[] = [

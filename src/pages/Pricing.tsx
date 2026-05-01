@@ -10,8 +10,8 @@ const Pricing = () => {
 
   const [addons, setAddons] = useState<Record<string, boolean>>({
     cloud: true,
-    password: true,
-    ...Object.fromEntries(addonProducts.map(p => [p.id, p.id === 'cloud' || p.id === 'password']))
+    budget: true,
+    ...Object.fromEntries(addonProducts.map(p => [p.id, p.id === 'cloud' || p.id === 'budget']))
   });
 
   const effectiveCapacity = mode === 'personnel' ? 1 : capacity;
@@ -100,7 +100,10 @@ const Pricing = () => {
                   <p className="text-xs text-on-surface-variant">{baseProduct.shortDescription}</p>
                 </div>
               </div>
-              <span className="px-3 py-1 rounded-full bg-primary-container text-on-primary-container text-[10px] font-bold uppercase tracking-wider">Inclus</span>
+              <div className="flex flex-col items-end gap-1">
+                <span className="px-3 py-1 rounded-full bg-primary-container text-on-primary-container text-[10px] font-bold uppercase tracking-wider">Inclus</span>
+                <span className="text-[10px] font-bold text-primary">€{baseProduct.price.toFixed(2)}/util.</span>
+              </div>
             </div>
 
             <h3 className="text-xl font-bold text-on-background mb-6">Modules Complémentaires</h3>
@@ -149,7 +152,7 @@ const Pricing = () => {
                   <div key={addon.id} className="flex justify-between items-center">
                     <div className="flex items-center gap-2">
                       <span className="text-on-surface font-medium">{addon.name}</span>
-                      <span className="text-[10px] bg-secondary-container text-on-secondary-container px-1.5 py-0.5 rounded font-bold uppercase tracking-tighter">Add-On</span>
+                      <span className="text-[10px] bg-secondary-container text-on-secondary-container px-1.5 py-0.5 rounded font-bold uppercase tracking-tighter">Actif</span>
                     </div>
                     <span className="text-on-background font-bold">€{(effectiveCapacity * addon.price).toFixed(2)}</span>
                   </div>
