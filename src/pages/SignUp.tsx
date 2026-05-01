@@ -1,33 +1,76 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
 import { PRODUCTS } from '../data/products';
 
 const SignUp = () => {
-  const [mode, setMode] = useState<'personnel' | 'professionnel'>('personnel');
-  const [capacity, setCapacity] = useState(24);
+  const [searchParams] = useSearchParams();
+
+  const [mode, setMode] = useState<'personnel' | 'professionnel'>((searchParams.get('mode') as any) || 'personnel');
+  const [capacity, setCapacity] = useState(parseInt(searchParams.get('capacity') || '24'));
 
   const baseProduct = PRODUCTS.find(p => p.isBase) || PRODUCTS[0];
   const addonProducts = PRODUCTS.filter(p => p.isAddon);
 
+  const initialAddons = searchParams.get('addons')?.split(',') || ['cloud'];
   const [pack, setPack] = useState<Record<string, boolean>>({
-    cloud: true,
-    ...Object.fromEntries(addonProducts.map(p => [p.id, p.id === 'cloud']))
+    ...Object.fromEntries(addonProducts.map(p => [p.id, initialAddons.includes(p.id)]))
+  });
+
+  const initialQuantities = Object.fromEntries(
+    (searchParams.get('quantities')?.split(',') || [])
+      .map(q => q.split(':'))
+      .filter(([id]) => id)
+      .map(([id, val]) => [id, parseInt(val)])
+  );
+
+  const [addonQuantities, setAddonQuantities] = useState<Record<string, number>>({
+    ...Object.fromEntries(addonProducts.filter(p => p.allowsCustomQuantity).map(p => [p.id, 5])),
+    ...initialQuantities
   });
 
   const effectiveCapacity = mode === 'personnel' ? 1 : capacity;
 
+  // Validation: Addon licenses cannot exceed base product capacity
+  useEffect(() => {
+    if (mode === 'professionnel') {
+      const updatedQuantities = { ...addonQuantities };
+      let changed = false;
+      Object.keys(updatedQuantities).forEach(id => {
+        if (updatedQuantities[id] > capacity) {
+          updatedQuantities[id] = capacity;
+          changed = true;
+        }
+      });
+      if (changed) {
+        setAddonQuantities(updatedQuantities);
+      }
+    }
+  }, [capacity, mode]);
+
   const calculateTotal = () => {
-    let totalPerUser = baseProduct.price;
+    let total = baseProduct.price * effectiveCapacity;
     addonProducts.forEach(addon => {
       if (pack[addon.id]) {
-        totalPerUser += addon.price;
+        if (addon.allowsCustomQuantity && mode === 'professionnel') {
+          total += addon.price * (addonQuantities[addon.id] || 1);
+        } else {
+          total += addon.price * effectiveCapacity;
+        }
       }
     });
-    return (totalPerUser * effectiveCapacity).toFixed(2);
+    return total.toFixed(2);
   };
 
   const togglePack = (addonId: string) => {
     setPack({ ...pack, [addonId]: !pack[addonId] });
+  };
+
+  const updateQuantity = (addonId: string, val: number) => {
+    const maxVal = mode === 'professionnel' ? capacity : 1;
+    setAddonQuantities({
+      ...addonQuantities,
+      [addonId]: Math.min(maxVal, Math.max(1, isNaN(val) ? 1 : val))
+    });
   };
 
   return (
@@ -144,27 +187,59 @@ const SignUp = () => {
                 </div>
 
                 {addonProducts.map((item) => (
-                  <label key={item.id} className="group cursor-pointer relative">
-                    <input
-                      type="checkbox"
-                      className="hidden peer"
-                      checked={!!pack[item.id]}
-                      onChange={() => togglePack(item.id)}
-                    />
-                    <div className="p-6 rounded-2xl bg-surface-container-low border border-transparent peer-checked:border-primary peer-checked:bg-surface-container-lowest transition-all flex flex-col gap-3 h-full">
-                      <div className="flex justify-between items-start">
-                        <span className={`material-symbols-outlined ${item.color || 'text-primary'}`}>{item.icon}</span>
-                        <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${pack[item.id] ? 'bg-primary border-primary' : 'border-outline-variant'}`}>
-                          {pack[item.id] && <span className="material-symbols-outlined text-[14px] text-white">check</span>}
-                        </div>
+                  <div
+                    key={item.id}
+                    onClick={() => togglePack(item.id)}
+                    className={`p-6 rounded-2xl border transition-all flex flex-col gap-3 cursor-pointer ${pack[item.id] ? 'bg-surface-container-lowest border-primary shadow-sm' : 'bg-surface-container-low border-transparent hover:border-outline-variant/20'}`}
+                  >
+                    <div className="flex justify-between items-start">
+                      <span className={`material-symbols-outlined ${item.color || 'text-primary'}`}>{item.icon}</span>
+                      <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${pack[item.id] ? 'bg-primary border-primary' : 'border-outline-variant'}`}>
+                        {pack[item.id] && <span className="material-symbols-outlined text-[14px] text-white">check</span>}
                       </div>
-                      <div>
-                        <p className="font-bold font-headline">{item.name}</p>
-                        <p className="text-xs text-on-surface-variant">{item.shortDescription}</p>
-                      </div>
-                      <p className="text-sm font-bold text-primary mt-auto">{item.price.toFixed(2).replace('.', ',')}€ <span className="text-xs text-on-surface-variant font-normal">/ mois</span></p>
                     </div>
-                  </label>
+                    <div>
+                      <p className="font-bold font-headline">{item.name}</p>
+                      <p className="text-xs text-on-surface-variant">{item.shortDescription}</p>
+                    </div>
+
+                    <div className="flex items-center justify-between mt-auto pt-2" onClick={(e) => e.stopPropagation()}>
+                      <div className="flex flex-col">
+                        <p className="text-sm font-bold text-primary">{item.price.toFixed(2).replace('.', ',')}€</p>
+                        <p className="text-[10px] text-on-surface-variant font-medium tracking-tight">{item.allowsCustomQuantity && mode === 'professionnel' ? '/ unité' : '/ mois'}</p>
+                      </div>
+
+                      {item.allowsCustomQuantity && pack[item.id] && mode === 'professionnel' && (
+                        <div className="flex items-center gap-2 bg-surface-container-highest/50 p-0.5 rounded-lg border border-outline-variant/10">
+                          <button
+                            type="button"
+                            onClick={() => updateQuantity(item.id, (addonQuantities[item.id] || 1) - 1)}
+                            className="w-6 h-6 rounded bg-surface-container-low flex items-center justify-center hover:bg-primary hover:text-on-primary transition-colors text-on-surface-variant"
+                          >
+                            <span className="material-symbols-outlined text-[14px]">remove</span>
+                          </button>
+                          <div className="flex flex-col items-center px-1 min-w-[1.5rem]">
+                            <input
+                              type="number"
+                              min="1"
+                              max={capacity}
+                              value={addonQuantities[item.id] || 1}
+                              onChange={(e) => updateQuantity(item.id, parseInt(e.target.value))}
+                              className="w-8 bg-transparent text-center font-bold text-[12px] text-on-background border-0 focus:ring-0 p-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                            />
+                            <span className="text-[7px] font-bold uppercase tracking-tighter text-outline-variant leading-none">{item.quantityLabel || 'Qté'}</span>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => updateQuantity(item.id, (addonQuantities[item.id] || 1) + 1)}
+                            className="w-6 h-6 rounded bg-surface-container-low flex items-center justify-center hover:bg-primary hover:text-on-primary transition-colors text-on-surface-variant"
+                          >
+                            <span className="material-symbols-outlined text-[14px]">add</span>
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 ))}
               </div>
             </section>

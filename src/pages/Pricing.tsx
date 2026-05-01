@@ -1,8 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { PRODUCTS } from '../data/products';
 
 const Pricing = () => {
-  const [mode, setMode] = useState<'personnel' | 'professionnel'>('professionnel');
+  const navigate = useNavigate();
+  const [mode, setMode] = useState<'personnel' | 'professionnel'>('personnel');
   const [capacity, setCapacity] = useState(24);
 
   const baseProduct = PRODUCTS.find(p => p.isBase) || PRODUCTS[0];
@@ -14,20 +16,73 @@ const Pricing = () => {
     ...Object.fromEntries(addonProducts.map(p => [p.id, p.id === 'cloud' || p.id === 'password']))
   });
 
+  const [addonQuantities, setAddonQuantities] = useState<Record<string, number>>(
+    Object.fromEntries(addonProducts.filter(p => p.allowsCustomQuantity).map(p => [p.id, 5]))
+  );
+
   const effectiveCapacity = mode === 'personnel' ? 1 : capacity;
 
+  // Validation: Addon licenses cannot exceed base product capacity
+  useEffect(() => {
+    if (mode === 'professionnel') {
+      const updatedQuantities = { ...addonQuantities };
+      let changed = false;
+      Object.keys(updatedQuantities).forEach(id => {
+        if (updatedQuantities[id] > capacity) {
+          updatedQuantities[id] = capacity;
+          changed = true;
+        }
+      });
+      if (changed) {
+        setAddonQuantities(updatedQuantities);
+      }
+    }
+  }, [capacity, mode]);
+
   const calculateMonthly = () => {
-    let perUserTotal = baseProduct.price;
+    let total = baseProduct.price * effectiveCapacity;
     addonProducts.forEach(addon => {
       if (addons[addon.id]) {
-        perUserTotal += addon.price;
+        if (addon.allowsCustomQuantity && mode === 'professionnel') {
+          total += addon.price * (addonQuantities[addon.id] || 1);
+        } else {
+          total += addon.price * effectiveCapacity;
+        }
       }
     });
-    return (perUserTotal * effectiveCapacity).toFixed(2);
+    return total.toFixed(2);
   };
 
   const toggleAddon = (addonId: string) => {
     setAddons({ ...addons, [addonId]: !addons[addonId] });
+  };
+
+  const updateQuantity = (addonId: string, val: number) => {
+    const maxVal = mode === 'professionnel' ? capacity : 1;
+    setAddonQuantities({
+      ...addonQuantities,
+      [addonId]: Math.min(maxVal, Math.max(1, isNaN(val) ? 1 : val))
+    });
+  };
+
+  const handleSignUp = () => {
+    const params = new URLSearchParams();
+    params.set('mode', mode);
+    params.set('capacity', capacity.toString());
+
+    const activeAddons = Object.entries(addons)
+      .filter(([_, active]) => active)
+      .map(([id]) => id)
+      .join(',');
+    if (activeAddons) params.set('addons', activeAddons);
+
+    const quantities = Object.entries(addonQuantities)
+      .filter(([id]) => addons[id])
+      .map(([id, q]) => `${id}:${q}`)
+      .join(',');
+    if (quantities) params.set('quantities', quantities);
+
+    navigate(`/signup?${params.toString()}`);
   };
 
   return (
@@ -109,27 +164,55 @@ const Pricing = () => {
             <h3 className="text-xl font-bold text-on-background mb-6">Modules Complémentaires</h3>
             <div className="space-y-4">
               {addonProducts.map((addon) => (
-                <label
+                <div
                   key={addon.id}
-                  className="flex items-center justify-between p-5 rounded-2xl bg-surface-container-low cursor-pointer hover:bg-surface-container-high transition-colors group"
+                  onClick={() => toggleAddon(addon.id)}
+                  className={`flex items-center justify-between p-5 rounded-2xl cursor-pointer transition-all border-2 ${addons[addon.id] ? 'bg-surface-container-low border-primary/20 shadow-sm' : 'bg-surface-container-low/50 border-transparent hover:bg-surface-container-low hover:border-outline-variant/10 group'}`}
                 >
-                  <div className="flex items-center gap-4">
-                    <input
-                      type="checkbox"
-                      className="hidden"
-                      checked={!!addons[addon.id]}
-                      onChange={() => toggleAddon(addon.id)}
-                    />
+                  <div className="flex items-center gap-4 flex-1">
                     <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-colors ${addons[addon.id] ? 'border-primary bg-primary' : 'border-outline-variant bg-transparent'}`}>
                       {addons[addon.id] && <span className="material-symbols-outlined text-xs text-on-primary font-bold">check</span>}
                     </div>
                     <div>
-                      <h5 className="font-bold text-sm text-on-background group-hover:text-primary transition-colors">{addon.name}</h5>
+                      <h5 className={`font-bold text-sm transition-colors ${addons[addon.id] ? 'text-primary' : 'text-on-background group-hover:text-primary'}`}>{addon.name}</h5>
                       <p className="text-xs text-on-surface-variant">{addon.shortDescription}</p>
                     </div>
                   </div>
-                  <span className="text-sm font-bold text-on-background">€{addon.price.toFixed(2)}<span className="text-[10px] text-on-surface-variant ml-1">/util.</span></span>
-                </label>
+
+                  <div className="flex items-center gap-6" onClick={(e) => e.stopPropagation()}>
+                    {addon.allowsCustomQuantity && addons[addon.id] && mode === 'professionnel' && (
+                      <div className="flex items-center gap-2 bg-surface-container-highest/50 p-1 rounded-lg border border-outline-variant/10">
+                        <button
+                          onClick={() => updateQuantity(addon.id, (addonQuantities[addon.id] || 1) - 1)}
+                          className="w-7 h-7 rounded-md bg-surface-container-low flex items-center justify-center hover:bg-primary hover:text-on-primary transition-colors text-on-surface-variant"
+                        >
+                          <span className="material-symbols-outlined text-xs">remove</span>
+                        </button>
+                        <div className="flex flex-col items-center min-w-[2.5rem]">
+                          <input
+                            type="number"
+                            min="1"
+                            max={capacity}
+                            value={addonQuantities[addon.id] || 1}
+                            onChange={(e) => updateQuantity(addon.id, parseInt(e.target.value))}
+                            className="w-10 bg-transparent text-center font-bold text-[14px] text-on-background border-0 focus:ring-0 p-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                          />
+                          <span className="text-[8px] font-bold uppercase tracking-tighter text-outline-variant leading-none">{addon.quantityLabel || 'Qté'}</span>
+                        </div>
+                        <button
+                          onClick={() => updateQuantity(addon.id, (addonQuantities[addon.id] || 1) + 1)}
+                          className="w-7 h-7 rounded-md bg-surface-container-low flex items-center justify-center hover:bg-primary hover:text-on-primary transition-colors text-on-surface-variant"
+                        >
+                          <span className="material-symbols-outlined text-xs">add</span>
+                        </button>
+                      </div>
+                    )}
+                    <div className="text-right">
+                      <span className="text-sm font-bold text-on-background block">€{addon.price.toFixed(2)}</span>
+                      <span className="text-[10px] text-on-surface-variant font-medium tracking-tight">{addon.allowsCustomQuantity && mode === 'professionnel' ? '/unité' : '/util.'}</span>
+                    </div>
+                  </div>
+                </div>
               ))}
             </div>
           </div>
@@ -151,10 +234,14 @@ const Pricing = () => {
                 {addonProducts.map((addon) => addons[addon.id] && (
                   <div key={addon.id} className="flex justify-between items-center">
                     <div className="flex items-center gap-2">
-                      <span className="text-on-surface font-medium">{addon.name}</span>
+                      <span className="text-on-surface font-medium">
+                        {addon.name} {addon.allowsCustomQuantity && mode === 'professionnel' ? `(${addonQuantities[addon.id] || 1} ${addon.quantityLabel || 'unité'})` : `(${effectiveCapacity} util.)`}
+                      </span>
                       <span className="text-[10px] bg-secondary-container text-on-secondary-container px-1.5 py-0.5 rounded font-bold uppercase tracking-tighter">Add-On</span>
                     </div>
-                    <span className="text-on-background font-bold">€{(effectiveCapacity * addon.price).toFixed(2)}</span>
+                    <span className="text-on-background font-bold">
+                      €{(addon.allowsCustomQuantity && mode === 'professionnel' ? (addonQuantities[addon.id] || 1) * addon.price : effectiveCapacity * addon.price).toFixed(2)}
+                    </span>
                   </div>
                 ))}
               </div>
@@ -168,7 +255,10 @@ const Pricing = () => {
                   <span className="text-outline-variant text-lg">/mois</span>
                 </div>
               </div>
-              <button className="w-full bg-primary text-on-primary py-5 rounded-full text-lg font-bold shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-3">
+              <button
+                onClick={handleSignUp}
+                className="w-full bg-primary text-on-primary py-5 rounded-full text-lg font-bold shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-3"
+              >
                 Démarrer votre essai gratuit
                 <span className="material-symbols-outlined">arrow_forward</span>
               </button>
